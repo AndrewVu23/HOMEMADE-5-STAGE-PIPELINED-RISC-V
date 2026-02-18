@@ -12,7 +12,7 @@ module Instr_Mem_tb;
 
     integer i;
 
-    task check_address(input logic [31:0] addr_to_test, input logic expect_reset);
+    task check(input logic [31:0] addr_to_test, input logic expect_reset);
         begin
             address = addr_to_test;
             @(posedge clk); #1;
@@ -39,21 +39,21 @@ module Instr_Mem_tb;
 
         reset = 1; clk = 0; address = 32'b00000000;
         
-        check_address(32'h0000_0000, 1);
-        check_address(32'h0000_03FC, 1);
+        check(32'h0000_0000, 1);
+        check(32'h0000_03FC, 1);
 
         repeat(2) @(posedge clk); reset = 0;
-        check_address(32'h0000_0000, 0);
-        check_address(32'h0000_03FC, 0);
+        check(32'h0000_0000, 0);
+        check(32'h0000_03FC, 0);
        
-        check_address(32'h0000_0004, 0);
-        check_address(32'h0000_0005, 0);
-        check_address(32'h0000_0007, 0);
+        check(32'h0000_0004, 0);
+        check(32'h0000_0005, 0);
+        check(32'h0000_0007, 0);
         
         reset = 1;
-        check_address(32'h0000_0010, 1);
+        check(32'h0000_0010, 1);
         reset = 0;
-        check_address(32'h0000_0010, 0); 
+        check(32'h0000_0010, 0); 
 
         $finish;
     end

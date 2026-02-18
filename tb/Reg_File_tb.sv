@@ -21,7 +21,7 @@ module Reg_File_tb;
 
     integer i;
 
-    task do_write(input logic [W-1:0] addr, input logic [N-1:0] data);
+    task check_write(input logic [W-1:0] addr, input logic [N-1:0] data);
         begin
             w_RegWrite = 1;
             address_data = addr;
@@ -78,14 +78,14 @@ module Reg_File_tb;
         #1;
 
         for (i = 1; i < 6; i = i + 1)
-            do_write(i[W-1:0], i * 10);
+            check_write(i[W-1:0], i * 10);
 
         w_RegWrite = 0;
         check_read(1, 2, 10, 20);
         check_read(3, 4, 30, 40);
         check_read(0, 0, 0, 0);
 
-        do_write(0, {N{1'b1}});
+        check_write(0, {N{1'b1}});
         check_read(0, 1, 0, 10);
 
         w_RegWrite = 0;
