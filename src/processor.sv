@@ -109,6 +109,10 @@ MuxB MuxB_module(
     .B(B)
 );
 
+ALU ALU_module(
+    .
+);
+
 Reg_IF_ID Reg_IF_ID_module(
     .clk(clk),
     .f_instruction(f_instruction),
