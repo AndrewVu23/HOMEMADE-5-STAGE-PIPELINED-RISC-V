@@ -16,12 +16,13 @@ logic [W-1:0] address_data;
 logic w_RegWrite;
 logic [N-1:0] e_read_address1, e_read_address2, e_rd, e_ImmExt, e_PC, e_PC_plus_4;
 logic [W-1:0] e_rs1, e_rs2, e_rd;
-logic e_RegWrite, e_ALUSrc, e_MemWrite, e_Branch, e_Jump;
+logic e_RegWrite, e_ALUSrc, e_MemWrite, e_Branch, e_Jump, e_PCSrc;
 logic [1:0] e_ResultSrc;
 logic [2:0] e_ALUCon;
 logic e_flush;
 logic [1:0] forwardA, forwardB;
-logic [N-1:0] m_ALU_Result, A;
+logic [N-1:0] e_ALUResult, m_ALU_Result, A, B, e_PC_Target;
+logic zero;
 logic [N-1:0] e_write_data;
 
 assign d_rs1 = d_instruction[19:15];
@@ -86,6 +87,19 @@ Sign_Ext Sign_Ext_Module(
     .d_instruction(d_instruction)
 );
 
+PC_Target PC_Target(
+    .e_PC(e_PC),
+    .e_ImmExt(e_ImmExt),
+    .e_PC_Target(e_PC_Target)
+);
+
+Mux_PCTarget_to_PC Mux_PCTarget_to_PC_module(
+    .e_PC_Target(e_PC_Target),
+    .f_PC_plus_4(f_PC_plus_4),
+    .e_PCSrc(e_PCSrc),
+    .f_PC_next(f_PC_next),
+);
+
 MuxA MuxA_module(
     .e_read_address1(e_read_address1),
     .w_Result(w_Result),
@@ -110,7 +124,18 @@ MuxB MuxB_module(
 );
 
 ALU ALU_module(
-    .
+    .e_ALUCon(e_ALUCon),
+    .e_ALUResult(e_ALUResult),
+    .A(A),
+    .B(B),
+    .zero(zero),
+);
+
+J_and_B J_and_B_module(
+    .zero(zero),
+    .e_PCSrc(e_PCSrc),
+    .e_Jump(e_Jump),
+    .e_Branch(e_Branch),
 );
 
 Reg_IF_ID Reg_IF_ID_module(
