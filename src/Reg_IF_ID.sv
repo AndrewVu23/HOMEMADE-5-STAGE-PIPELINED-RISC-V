@@ -5,7 +5,7 @@ module Reg_IF_ID #(parameter N = 32)
     output logic [N-1:0] d_instruction, d_PC, d_PC_plus_4
 );
 always_ff @(posedge clk) begin
-    if (clr == 1) begin
+    if (clr) begin
         d_instruction <= 0;
         d_PC <= 0;
         d_PC_plus_4 <= 0;
