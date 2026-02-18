@@ -1,76 +1,87 @@
-module IF_ID_path_tb();
+module IF_ID_path_tb;
+    localparam N = 32;
 
     logic clk, reset, stall;
-    
     logic w_RegWrite;
     logic [4:0] address_data;
-    logic [31:0] w_Result;
-    logic [31:0] captured_pc;
+    logic [N-1:0] w_Result;
+    logic [N-1:0] captured_pc;
 
-    IF_ID_path #(32) dut (
-        .clk(clk), 
-        .reset(reset), 
+    IF_ID_path #(.N(N)) dut(
+        .clk(clk),
+        .reset(reset),
         .stall(stall),
         .w_RegWrite(w_RegWrite),
         .address_data(address_data),
         .w_Result(w_Result)
     );
 
-    always #5 clk = ~clk;
+    task check_pc_not_stuck;
+        begin
+            repeat(3) @(posedge clk);
+            #1;
+            if (dut.f_PC !== {N{1'b0}})
+                $display("[PASSED] PC incrementing | f_PC=%h", dut.f_PC);
+            else
+                $display("[FAILED] PC stuck at 0");
+        end
+    endtask
+
+    task check_regfile_write(input logic [4:0] rd, input logic [N-1:0] data);
+        begin
+            @(negedge clk);
+            address_data = rd;
+            w_Result = data;
+            w_RegWrite = 1;
+            @(negedge clk);
+            w_RegWrite = 0;
+            #1;
+            if (dut.Reg_File_module.Registers[rd] === data)
+                $display("[PASSED] RegFile write | x%0d=%h", rd, data);
+            else
+                $display("[FAILED] RegFile write | x%0d: Expected %h | Got %h", rd, data, dut.Reg_File_module.Registers[rd]);
+        end
+    endtask
+
+    task check_stall_holds_pc;
+        begin
+            @(negedge clk);
+            stall = 1;
+            repeat(2) @(posedge clk);
+            captured_pc = dut.f_PC;
+            @(posedge clk);
+            #1;
+            if (dut.f_PC == captured_pc)
+                $display("[PASSED] Stall | PC held at %h", dut.f_PC);
+            else
+                $display("[FAILED] Stall | PC moved from %h to %h", captured_pc, dut.f_PC);
+            stall = 0;
+        end
+    endtask
 
     initial begin
-        clk = 0; reset = 1; stall = 0;
-        w_RegWrite = 0; address_data = 0; w_Result = 0;
-        
-        #10 reset = 0; 
-        $display("[Time %0t] Reset released.", $time);
-        
-        // Run for 3 cycles to let instructions flow from Fetch -> Decode
-        repeat(3) @(posedge clk);
-        #1;
+        $monitor("Time: %0t | Reset: %b Stall: %b | f_PC: %h", $time, reset, stall, dut.f_PC);
 
-        // PC Counter Check
-        if (dut.f_PC !== 32'h0) 
-            $display("PASSED. Current PC: %h", dut.f_PC);
-        else 
-            $error("FAILED. PC is stuck at 0");
-        
-        // Updating Register File Test
-        @(negedge clk); 
-        address_data = 5'd1;        
-        w_Result = 32'hDEADBEEF;  
-        w_RegWrite = 1;       
-        
-        @(negedge clk); 
-        w_RegWrite = 0; 
-
-        if (dut.Reg_File_module.Registers[1] === 32'hDEADBEEF) begin
-            $display("PASSED. Register File updated correctly. Got: %h", dut.Reg_File_module.Registers[1]));
-        end else begin
-            $error("FAILED. Got: %h expected DEADBEEF", dut.Reg_File_module.Registers[1]);
-        end
-
-        // Stall Test
-        @(negedge clk);
-        stall = 1; 
-
-        repeat(2) @(posedge clk);
-        
-        // PC Movement Check (should stop)
-        captured_pc = dut.f_PC;
-        @(posedge clk);
-        
-        if (dut.f_PC == captured_pc) begin
-            $display("PASSED. PC stayed at %h", dut.f_PC);
-        end else begin
-            $error("FAILED. PC moved from %h to %h", captured_pc, dut.f_PC);
-        end
-
-        // Release Stall
+        clk = 0;
+        reset = 1;
         stall = 0;
+        w_RegWrite = 0;
+        address_data = 0;
+        w_Result = 0;
+
+        #10 reset = 0;
+
+        check_pc_not_stuck;
+
+        check_regfile_write(5'd1, 32'hDEADBEEF);
+
+        check_stall_holds_pc;
+
         repeat(2) @(posedge clk);
 
         $finish;
     end
+
+    always #5 clk = ~clk;
 
 endmodule
