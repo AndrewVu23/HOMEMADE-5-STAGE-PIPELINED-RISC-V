@@ -12,9 +12,7 @@ logic d_RegWrite, d_ALUSrc, d_MemWrite, d_Branch, d_Jump, d_stall, d_flush;
 logic [2:0] d_ALUCon;
 logic [1:0] ALUOp, d_ImmSrc, d_ResultSrc;
 logic [W-1:0] d_rs1, d_rs2, d_rd;
-logic [W-1:0] address_data;
-logic w_RegWrite;
-logic [N-1:0] e_read_address1, e_read_address2 e_ImmExt, e_PC, e_PC_plus_4;
+logic [N-1:0] e_read_address1, e_read_address2, e_ImmExt, e_PC, e_PC_plus_4;
 logic [W-1:0] e_rs1, e_rs2, e_rd;
 logic e_RegWrite, e_ALUSrc, e_MemWrite, e_Branch, e_Jump, e_PCSrc;
 logic [1:0] e_ResultSrc;
@@ -67,7 +65,7 @@ Reg_File Reg_File_module(
     .address2(d_instruction[24:20]),
     .read_address1(d_read_address1),
     .read_address2(d_read_address2),
-    .address_data(address_data),
+    .address_data(w_rd),
     .write_data(w_Result)
 );
 
