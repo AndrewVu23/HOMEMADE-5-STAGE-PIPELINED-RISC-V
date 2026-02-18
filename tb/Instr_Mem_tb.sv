@@ -34,7 +34,7 @@ module Instr_Mem_tb;
         $monitor("Time: %0t | Reset: %b | Addr: %h | Instr: %d", $time, reset, address, instruction_out);
 
         for (i = 0; i < 1024; i = i + 1) begin
-            dut.instruction_mem[i] = i * 10;
+            dut.ROM[i] = i * 10;
         end
 
         reset = 1; clk = 0; address = 32'b00000000;

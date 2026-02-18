@@ -21,9 +21,18 @@ logic [1:0] e_ResultSrc;
 logic [2:0] e_ALUCon;
 logic e_flush;
 logic [1:0] forwardA, forwardB;
-logic [N-1:0] e_ALUResult, m_ALU_Result, A, B, e_PC_Target;
+logic [N-1:0] e_ALUResult, A, B, e_PC_Target;
 logic zero;
 logic [N-1:0] e_write_data;
+logic [N-1:0] m_ALU_Result, m_write_data, m_PC_plus_4, m_read_address;
+logic [W-1:0] m_rd;
+logic [1:0] m_ResultSrc;
+logic m_RegWrite, m_MemWrite;
+logic [N-1:0] w_ALU_Result, w_read_address, w_PC_plus_4;
+logic [W-1:0] w_rd;
+logic [1:0] w_ResultSrc;
+logic w_RegWrite;
+
 
 assign d_rs1 = d_instruction[19:15];
 assign d_rs2 = d_instruction[24:20];
@@ -138,6 +147,14 @@ J_and_B J_and_B_module(
     .e_Branch(e_Branch)
 );
 
+Data_Mem Data_Mem_module(
+    .clk(clk),
+    .m_MemWrite(m_MemWrite),
+    .address(m_ALU_Result),
+    .m_write_data(m_write_data),
+    .m_read_address(m_read_address)
+);
+
 Reg_IF_ID Reg_IF_ID_module(
     .clk(clk),
     .f_instruction(f_instruction),
@@ -184,4 +201,39 @@ Reg_ID_EX Reg_ID_EX_module(
     .e_ResultSrc(e_ResultSrc),
     .e_ALUCon(e_ALUCon)
 );
+
+Reg_EX_MEM Reg_EX_MEM_module(
+    .clk(clk),
+    .e_ALU_Result(e_ALUResult),
+    .e_write_data(e_write_data),
+    .e_PC_plus_4(e_PC_plus_4),
+    .e_rd(e_rd),
+    .e_ResultSrc(e_ResultSrc),
+    .e_RegWrite(e_RegWrite),
+    .e_MemWrite(e_MemWrite),
+    .m_ALU_Result(m_ALU_Result),
+    .m_write_data(m_write_data),
+    .m_PC_plus_4(m_PC_plus_4),
+    .m_rd(m_rd),
+    .m_ResultSrc(m_ResultSrc),
+    .m_RegWrite(m_RegWrite),
+    .m_MemWrite(m_MemWrite)
+);
+
+Reg_MEM_WB Reg_MEM_WB_module(
+    .clk(clk),
+    .m_ALU_Result(m_ALU_Result),
+    .m_read_address(m_read_address),
+    .m_PC_plus_4(m_PC_plus_4),
+    .m_rd(m_rd),
+    .m_ResultSrc(m_ResultSrc),
+    .m_RegWrite(m_RegWrite),
+    .w_ALU_Result(w_ALU_Result),
+    .w_read_address(w_read_address),
+    .w_PC_plus_4(w_PC_plus_4),
+    .w_rd(w_rd),
+    .w_ResultSrc(w_ResultSrc),
+    .w_RegWrite(w_RegWrite)
+);
+
 endmodule
