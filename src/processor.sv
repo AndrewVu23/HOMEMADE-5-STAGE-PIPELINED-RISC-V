@@ -1,4 +1,4 @@
-module IF_ID_path #(parameter N = 32, parameter W = 5)
+module processor #(parameter N = 32, parameter W = 5)
 (
     input logic clk, reset,
     input logic stall
@@ -14,7 +14,7 @@ logic [1:0] ALUOp, d_ImmSrc, d_ResultSrc;
 logic [W-1:0] d_rs1, d_rs2, d_rd;
 logic [W-1:0] address_data;
 logic w_RegWrite;
-logic [N-1:0] e_read_address1, e_read_address2, e_rd, e_ImmExt, e_PC, e_PC_plus_4;
+logic [N-1:0] e_read_address1, e_read_address2 e_ImmExt, e_PC, e_PC_plus_4;
 logic [W-1:0] e_rs1, e_rs2, e_rd;
 logic e_RegWrite, e_ALUSrc, e_MemWrite, e_Branch, e_Jump, e_PCSrc;
 logic [1:0] e_ResultSrc;
@@ -97,7 +97,7 @@ Mux_PCTarget_to_PC Mux_PCTarget_to_PC_module(
     .e_PC_Target(e_PC_Target),
     .f_PC_plus_4(f_PC_plus_4),
     .e_PCSrc(e_PCSrc),
-    .f_PC_next(f_PC_next),
+    .f_PC_next(f_PC_next)
 );
 
 MuxA MuxA_module(
@@ -128,14 +128,14 @@ ALU ALU_module(
     .e_ALUResult(e_ALUResult),
     .A(A),
     .B(B),
-    .zero(zero),
+    .zero(zero)
 );
 
 J_and_B J_and_B_module(
     .zero(zero),
     .e_PCSrc(e_PCSrc),
     .e_Jump(e_Jump),
-    .e_Branch(e_Branch),
+    .e_Branch(e_Branch)
 );
 
 Reg_IF_ID Reg_IF_ID_module(

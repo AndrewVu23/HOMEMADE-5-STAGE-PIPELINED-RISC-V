@@ -4,7 +4,7 @@ module Mux_Reg_to_B #(parameter N = 32)
     input logic [1:0] forwardB,
     output logic [N-1:0] e_write_data
 );
-always_ff @(*) begin
+always_comb begin
     case(forwardB)
         2'b00: e_write_data = e_read_address2;
         2'b01: e_write_data = w_Result;

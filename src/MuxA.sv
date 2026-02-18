@@ -4,7 +4,7 @@ module MuxA #(parameter N = 32)
     input logic [1:0] forwardA,
     output logic [N-1:0] A
 );
-always_ff @(*) begin
+always_comb begin
     case(forwardA)
         2'b00: A = e_read_address1;
         2'b01: A = w_Result;
