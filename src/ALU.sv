@@ -5,10 +5,10 @@ module ALU(
   output logic [31:0] e_ALUResult
 );
   
-logic [31:0] signed_A, signed_B;
+logic signed [31:0] signed_A, signed_B;
 
-assign signed_A = $signed(A);
-assign signed_B = $signed(B);
+assign signed_A = A;
+assign signed_B = B;
 
 always @(*) begin
   case(e_ALUCon)
