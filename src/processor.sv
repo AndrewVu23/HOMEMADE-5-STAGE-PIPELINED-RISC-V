@@ -19,14 +19,14 @@ logic [1:0] e_ResultSrc;
 logic [2:0] e_ALUCon;
 logic e_flush;
 logic [1:0] forwardA, forwardB;
-logic [N-1:0] e_ALUResult, A, B, e_PC_Target;
+logic [N-1:0] e_ALU_Result, A, B, e_PC_Target;
 logic zero;
 logic [N-1:0] e_write_data;
 logic [N-1:0] m_ALU_Result, m_write_data, m_PC_plus_4, m_read_address;
 logic [W-1:0] m_rd;
 logic [1:0] m_ResultSrc;
 logic m_RegWrite, m_MemWrite;
-logic [N-1:0] w_ALU_Result, w_read_address, w_PC_plus_4;
+logic [N-1:0] w_ALU_Result, w_read_address, w_PC_plus_4, w_Result;
 logic [W-1:0] w_rd;
 logic [1:0] w_ResultSrc;
 logic w_RegWrite;
@@ -130,9 +130,15 @@ MuxB MuxB_module(
     .B(B)
 );
 
+MuxWB MuxWB_module(
+    .w_ALU_Result(w_ALU_Result),
+    .w_read_address(w_read_address),
+    .w_PC_plus_4(w_PC_plus_4)
+);
+
 ALU ALU_module(
     .e_ALUCon(e_ALUCon),
-    .e_ALUResult(e_ALUResult),
+    .e_ALU_Result(e_ALUResult),
     .A(A),
     .B(B),
     .zero(zero)

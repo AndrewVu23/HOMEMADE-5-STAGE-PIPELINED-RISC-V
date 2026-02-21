@@ -1,9 +1,10 @@
-module Data_Mem(
+module Data_Mem #(parameter N = 32)
+(
   input clk, m_MemWrite,
-  input logic [31:0] address, m_write_data,
-  output logic [31:0] m_read_address
+  input logic [N-1:0] address, m_write_data,
+  output logic [N-1:0] m_read_address
 );
-  logic [31:0] RAM [1023:0];
+  logic [N-1:0] RAM [1023:0];
 
   assign m_read_address = RAM[address[11:2]];
 
