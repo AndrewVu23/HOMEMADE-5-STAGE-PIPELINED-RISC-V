@@ -134,11 +134,13 @@ MuxWB MuxWB_module(
     .w_ALU_Result(w_ALU_Result),
     .w_read_address(w_read_address),
     .w_PC_plus_4(w_PC_plus_4)
+    .w_Result(w_Result),
+    .w_ResultSrc(w_ResultSrc)
 );
 
 ALU ALU_module(
     .e_ALUCon(e_ALUCon),
-    .e_ALU_Result(e_ALUResult),
+    .e_ALU_Result(e_ALU_Result),
     .A(A),
     .B(B),
     .zero(zero)
@@ -241,6 +243,7 @@ Reg_MEM_WB Reg_MEM_WB_module(
 );
 
 Hazard_Unit Hazard_Unit_module(
+    .f_stall(f_stall),
     .d_stall(d_stall),
     .d_flush(d_flush),
     .d_rs1(d_rs1),
