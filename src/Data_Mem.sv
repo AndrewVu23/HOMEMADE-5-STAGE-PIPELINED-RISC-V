@@ -1,6 +1,6 @@
 module Data_Mem #(parameter N = 32)
 (
-  input clk, m_MemWrite,
+  input logic clk, m_MemWrite,
   input logic [N-1:0] address, m_write_data,
   output logic [N-1:0] m_read_address
 );

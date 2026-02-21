@@ -1,4 +1,4 @@
-module processor #(parameter N = 32, parameter W = 5)
+module Processor #(parameter N = 32, parameter W = 5)
 (
     input logic clk, reset,
     input logic stall
@@ -237,6 +237,25 @@ Reg_MEM_WB Reg_MEM_WB_module(
     .w_PC_plus_4(w_PC_plus_4),
     .w_rd(w_rd),
     .w_ResultSrc(w_ResultSrc),
+    .w_RegWrite(w_RegWrite)
+);
+
+Hazard_Unit Hazard_Unit_module(
+    .d_stall(d_stall),
+    .d_flush(d_flush),
+    .d_rs1(d_rs1),
+    .d_rs2(d_rs2),
+    .e_flush(e_flush),
+    .e_rd(e_rd),
+    .e_rs1(e_rs1),
+    .e_rs2(e_rs2),
+    .forwardA(forwardA),
+    .forwardB(forwardB),
+    .e_PCSrc(e_PCSrc),
+    .e_ResultSrc(e_ResultSrc),
+    .m_rd(m_rd),
+    .m_RegWrite(m_RegWrite),
+    .w_rd(w_rd),
     .w_RegWrite(w_RegWrite)
 );
 

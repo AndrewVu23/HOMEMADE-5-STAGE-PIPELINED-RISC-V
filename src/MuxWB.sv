@@ -1,8 +1,8 @@
 module MuxWB #(parameter N = 32)
 (
-    input [N-1:0] w_ALU_Result, w_read_address, w_PC_plus_4,
-    input [1:0] w_ResultSrc,
-    output [N-1:0] w_Result
+    input logic [N-1:0] w_ALU_Result, w_read_address, w_PC_plus_4,
+    input logic [1:0] w_ResultSrc,
+    output logic [N-1:0] w_Result
 );
 always_comb begin
     case(w_ResultSrc) 

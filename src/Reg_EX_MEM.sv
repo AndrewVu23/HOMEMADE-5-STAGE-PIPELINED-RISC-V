@@ -1,6 +1,6 @@
 module Reg_EX_MEM #(parameter N = 32, parameter W = 5)
 (
-    input clk,
+    input logic clk,
     input logic [N-1:0] e_ALU_Result, e_write_data, e_PC_plus_4,
     input logic [W-1:0] e_rd,
     input logic [1:0] e_ResultSrc,
