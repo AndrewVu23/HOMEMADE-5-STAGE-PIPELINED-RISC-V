@@ -9,6 +9,7 @@ always_comb begin
         2'b00: e_write_data = e_read_address2;
         2'b01: e_write_data = w_Result;
         2'b10: e_write_data = m_ALU_Result;
+        default: e_write_data = 32'b0;
     endcase
 end
 endmodule

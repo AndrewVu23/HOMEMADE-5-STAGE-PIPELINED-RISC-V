@@ -6,7 +6,6 @@ module Processor #(parameter N = 32, parameter W = 5)
 logic [N-1:0] f_instruction, f_PC_next, f_PC, f_PC_plus_4;
 logic [N-1:0] d_instruction, d_read_address1, d_read_address2, d_ImmExt;
 logic [N-1:0] d_PC, d_PC_plus_4;
-logic [N-1:0] w_Result;
 logic f_stall;
 logic d_RegWrite, d_ALUSrc, d_MemWrite, d_Branch, d_Jump, d_stall, d_flush;
 logic [2:0] d_ALUCon;
@@ -77,6 +76,7 @@ Control_Unit Control_Unit_Module(
     .d_ResultSrc(d_ResultSrc),
     .d_Branch(d_Branch),
     .d_ImmSrc(d_ImmSrc),
+    .d_Jump(d_Jump),
     .ALUOp(ALUOp)
 );
 
@@ -133,7 +133,7 @@ MuxB MuxB_module(
 MuxWB MuxWB_module(
     .w_ALU_Result(w_ALU_Result),
     .w_read_address(w_read_address),
-    .w_PC_plus_4(w_PC_plus_4)
+    .w_PC_plus_4(w_PC_plus_4),
     .w_Result(w_Result),
     .w_ResultSrc(w_ResultSrc)
 );
@@ -163,6 +163,7 @@ Data_Mem Data_Mem_module(
 
 Reg_IF_ID Reg_IF_ID_module(
     .clk(clk),
+    .reset(reset),
     .f_instruction(f_instruction),
     .d_instruction(d_instruction),
     .f_PC_plus_4(f_PC_plus_4),
@@ -176,6 +177,7 @@ Reg_IF_ID Reg_IF_ID_module(
 Reg_ID_EX Reg_ID_EX_module(
     .clk(clk),
     .clr(e_flush),
+    .reset(reset),
     .d_read_address1(d_read_address1),
     .d_read_address2(d_read_address2),
     .d_rd(d_rd),
@@ -210,7 +212,8 @@ Reg_ID_EX Reg_ID_EX_module(
 
 Reg_EX_MEM Reg_EX_MEM_module(
     .clk(clk),
-    .e_ALU_Result(e_ALUResult),
+    .reset(reset),
+    .e_ALU_Result(e_ALU_Result),
     .e_write_data(e_write_data),
     .e_PC_plus_4(e_PC_plus_4),
     .e_rd(e_rd),
@@ -228,6 +231,7 @@ Reg_EX_MEM Reg_EX_MEM_module(
 
 Reg_MEM_WB Reg_MEM_WB_module(
     .clk(clk),
+    .reset(reset),
     .m_ALU_Result(m_ALU_Result),
     .m_read_address(m_read_address),
     .m_PC_plus_4(m_PC_plus_4),

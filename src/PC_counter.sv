@@ -6,6 +6,6 @@ module PC_counter #(parameter N = 32)
 );
 always_ff @(posedge clk) begin
     if (reset) f_PC = 0;
-    else if (!f_stall) f_PC = f_PC_next;
+    else if (!f_stall) f_PC <= f_PC_next;
 end
 endmodule

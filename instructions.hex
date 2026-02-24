@@ -1,0 +1,26 @@
+// Phase 1: Basic Math & EX-to-EX Forwarding
+00500093 // 00: addi x1, x0, 5      (x1 = 5)
+00a00113 // 04: addi x2, x0, 10     (x2 = 10)
+002081b3 // 08: add  x3, x1, x2     (x3 = 15)
+40118233 // 0C: sub  x4, x3, x1     (x4 = 10 -> triggers EX-EX forwarding)
+
+// Phase 2: MEM-to-EX Forwarding
+002082b3 // 10: add  x5, x1, x2     (x5 = 15)
+00000013 // 14: addi x0, x0, 0      (NOP to push the add into MEM)
+40228333 // 18: sub  x6, x5, x2     (x6 = 5 -> triggers MEM-EX forwarding)
+
+// Phase 3: The Load-Use Stall
+00602023 // 1C: sw   x6, 0(x0)      (Store 5 to address 0)
+00002383 // 20: lw   x7, 0(x0)      (Load 5 back into x7)
+00138433 // 24: add  x8, x7, x1     (x8 = 10 -> triggers Load-Use Stall)
+
+// Phase 4: Control Hazards & Flushing
+00240663 // 28: beq  x8, x2, 12     (If 10==10, jump forward 12 bytes/3 instructions)
+06300493 // 2C: addi x9, x0, 99     (BAD: In Decode stage, must be flushed)
+06300493 // 30: addi x9, x0, 99     (BAD: In Fetch stage, must be flushed)
+
+// Target
+06400513 // 34: addi x10, x0, 100   (x10 = 100. Execution should land here)
+
+// End Program (Infinite Loop to trap the PC)
+00000063 // 38: beq  x0, x0, 0      (Jump to self)
