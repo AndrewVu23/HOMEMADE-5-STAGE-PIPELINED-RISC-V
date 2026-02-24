@@ -6,6 +6,8 @@ module Processor_tb;
 
     logic clk, reset, stall;
 
+    integer i;
+
     Processor #(.N(N), .W(W)) dut(
         .clk(clk),
         .reset(reset),
@@ -18,11 +20,11 @@ module Processor_tb;
             actual_val = dut.Reg_File_module.Registers[reg_num]; 
 
             if (actual_val === expected_val) begin
-                $display("[PASSED] | Time: %0t | x%0d | Expected: %0d | Got: %0d", 
-                        $time, reg_num, expected_val, actual_val);
+                $display("[PASSED] | x%0d | Expected: %0d | Got: %0d", 
+                        reg_num, expected_val, actual_val);
             end else begin
-                $display("[FAILED] | Time: %0t | x%0d | Expected: %0d | Got: %0d", 
-                        $time, reg_num, expected_val, actual_val);
+                $display("[FAILED] | x%0d | Expected: %0d | Got: %0d", 
+                        reg_num, expected_val, actual_val);
             end
         end
     endtask
@@ -34,7 +36,10 @@ module Processor_tb;
         $dumpvars(0, Processor_tb);
 
         clk = 0; reset = 1; stall = 0; 
-        dut.Reg_File_module.Registers[0] = 32'b0;
+
+        for (i = 0; i < 32; i = i + 1) begin
+            dut.Reg_File_module.Registers[i] = 32'b0;
+        end
 
 
         $readmemh("instructions.hex", dut.Instr_Mem_module.ROM);
@@ -65,7 +70,16 @@ module Processor_tb;
 
         //Phase 4: Control Hazards & Flushing
         check_register(5'd9, 32'd0);
-        check_register(5'd10, 32'd100);
+        check_register(5'd10, 32'd0);
+
+        // Phase 5: Branch Not Taken & Logic
+        check_register(5'd11, 32'd0);   
+        check_register(5'd12, 32'd15); 
+
+        // Phase 6: Jal & U-Type
+        check_register(5'd13, 32'd68);  
+        check_register(5'd14, 32'd0);   
+        check_register(5'd15, 32'd16384); 
 
         #1000;
         $finish;

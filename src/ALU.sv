@@ -18,6 +18,7 @@ always @(*) begin
     3'b101: e_ALU_Result = (signed_A < signed_B) ? 32'h1 : 32'h0; 
     3'b011: e_ALU_Result = A | B; 
     3'b010: e_ALU_Result = A & B; 
+    3'b110: e_ALU_Result = B;
     default: e_ALU_Result = 32'h0;
   endcase
 

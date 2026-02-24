@@ -19,8 +19,18 @@
 06300493 // 2C: addi x9, x0, 99     (BAD: In Decode stage, must be flushed)
 06300493 // 30: addi x9, x0, 99     (BAD: In Fetch stage, must be flushed)
 
-// Target
-06400513 // 34: addi x10, x0, 100   (x10 = 100. Execution should land here)
+// Phase 5: Branch Not Taken & ALU Logic
+00a51463 // 34: bne  x10, x10, 8    (If 0 != 0 jump. FALSE! Do not jump.)
+0020f5b3 // 38: and  x11, x1, x2    (x11 = 5 & 10 = 0101 & 1010 = 0)
+0020e633 // 3C: or   x12, x1, x2    (x12 = 5 | 10 = 0101 | 1010 = 15)
 
-// End Program (Infinite Loop to trap the PC)
-00000063 // 38: beq  x0, x0, 0      (Jump to self)
+// Phase 6: Jump and Link (jal) & U-Type
+00c006ef // 40: jal  x13, 12        (Jump forward 12 bytes. Save PC+4 (address 68) to x13)
+06300713 // 44: addi x14, x0, 99    (BAD: In Decode. Must be flushed)
+06300713 // 48: addi x14, x0, 99    (BAD: In Fetch. Must be flushed)
+
+// Target
+000047b7 // 4C: lui  x15, 4         (x15 = 4 << 12 = 16384. Execution lands here)
+
+// End Program (Infinite Loop)
+00000063 // 50: beq  x0, x0, 0      (Jump to self)
