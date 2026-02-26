@@ -4,14 +4,14 @@ module ALU_tb;
     logic [N-1:0] A, B;
     logic [2:0] e_ALUCon;
     logic zero;
-    logic [N-1:0] e_ALUResult;
+    logic [N-1:0] e_ALU_Result;
 
     ALU dut(
         .A(A),
         .B(B),
         .e_ALUCon(e_ALUCon),
         .zero(zero),
-        .e_ALUResult(e_ALUResult)
+        .e_ALU_Result(e_ALU_Result)
     );
 
     task check(input logic [2:0] alucon, input logic [N-1:0] a, input logic [N-1:0] b,
@@ -21,16 +21,19 @@ module ALU_tb;
             A = a;
             B = b;
             #1;
-            if (e_ALUResult === expect_result && zero === expect_zero)
-                $display("[PASSED] ALUCon=%b A=%0d B=%0d | Result=%0d zero=%b", alucon, $signed(a), $signed(b), $signed(e_ALUResult), zero);
+            if (e_ALU_Result === expect_result && zero === expect_zero)
+                $display("[PASSED] ALUCon=%b A=%0d B=%0d | Result=%0d zero=%b", alucon, $signed(a), $signed(b), $signed(e_ALU_Result), zero);
             else
                 $display("[FAILED] ALUCon=%b A=%0d B=%0d | Expected %0d zero=%b | Got %0d zero=%b",
-                         alucon, $signed(a), $signed(b), $signed(expect_result), expect_zero, $signed(e_ALUResult), zero);
+                         alucon, $signed(a), $signed(b), $signed(expect_result), expect_zero, $signed(e_ALU_Result), zero);
         end
     endtask
 
     initial begin
-        $monitor("Time: %0t | ALUCon: %b | A: %h B: %h | Result: %h zero: %b", $time, e_ALUCon, A, B, e_ALUResult, zero);
+        $dumpfile("ALU.vcd");
+        $dumpvars(0, ALU_tb);
+        
+        $monitor("Time: %0t | ALUCon: %b | A: %h B: %h | Result: %h zero: %b", $time, e_ALUCon, A, B, e_ALU_Result, zero);
 
         // ADD: 10 + 25 = 35
         check(3'b000, 32'd10, 32'd25, 32'd35, 1'b0);

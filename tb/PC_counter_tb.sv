@@ -26,6 +26,9 @@ module PC_counter_tb;
     endtask
 
     initial begin
+        $dumpfile("PC_counter.vcd");
+        $dumpvars(0, PC_counter_tb);
+
         $monitor("Time: %0t | Reset: %b Stall: %b | f_PC_next: %h f_PC: %h", $time, reset, stall, f_PC_next, f_PC);
 
         clk = 0;

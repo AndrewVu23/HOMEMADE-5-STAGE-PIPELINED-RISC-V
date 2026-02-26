@@ -32,7 +32,7 @@ module Processor_tb;
     always #5 clk = ~clk;
 
     initial begin
-        $dumpfile("sim.vcd");
+        $dumpfile("Processor.vcd");
         $dumpvars(0, Processor_tb);
 
         clk = 0; reset = 1; stall = 0; 

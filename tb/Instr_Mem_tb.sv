@@ -31,6 +31,9 @@ module Instr_Mem_tb;
     endtask
 
     initial begin
+        $dumpfile("Instr_Mem.vcd");
+        $dumpvars(0, Instr_Mem_tb);
+
         $monitor("Time: %0t | Reset: %b | Addr: %h | Instr: %d", $time, reset, address, instruction_out);
 
         for (i = 0; i < 1024; i = i + 1) begin
