@@ -1,7 +1,7 @@
 module IF_ID_path_tb;
     localparam N = 32;
 
-    logic clk, reset, stall;
+    logic clk, rst, stall;
     logic w_RegWrite;
     logic [4:0] address_data;
     logic [N-1:0] w_Result;
@@ -9,7 +9,7 @@ module IF_ID_path_tb;
 
     IF_ID_path #(.N(N)) dut(
         .clk(clk),
-        .reset(reset),
+        .rst(rst),
         .stall(stall),
         .w_RegWrite(w_RegWrite),
         .address_data(address_data),
@@ -60,16 +60,16 @@ module IF_ID_path_tb;
     endtask
 
     initial begin
-        $monitor("Time: %0t | Reset: %b Stall: %b | f_PC: %h", $time, reset, stall, dut.f_PC);
+        $monitor("Time: %0t | Reset: %b Stall: %b | f_PC: %h", $time, rst, stall, dut.f_PC);
 
         clk = 0;
-        reset = 1;
+        rst = 1;
         stall = 0;
         w_RegWrite = 0;
         address_data = 0;
         w_Result = 0;
 
-        #10 reset = 0;
+        #10 rst = 0;
 
         check_pc_not_stuck;
 

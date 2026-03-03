@@ -1,6 +1,6 @@
 module Reg_MEM_WB #(parameter N = 32, parameter W = 5)
 (
-    input clk, reset,
+    input clk, rst,
     input logic [N-1:0] m_read_address, m_PC_plus_4, m_ALU_Result,
     input logic [W-1:0] m_rd, 
     input logic [1:0] m_ResultSrc,
@@ -11,7 +11,7 @@ module Reg_MEM_WB #(parameter N = 32, parameter W = 5)
     output logic w_RegWrite
 );
     always_ff @(posedge clk) begin
-        if (reset) begin
+        if (rst) begin
             w_ALU_Result <= 0;
             w_read_address <= 0;
             w_PC_plus_4 <= 0;

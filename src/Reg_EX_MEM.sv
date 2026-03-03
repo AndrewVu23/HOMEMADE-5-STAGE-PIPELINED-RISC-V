@@ -1,6 +1,6 @@
 module Reg_EX_MEM #(parameter N = 32, parameter W = 5)
 (
-    input logic clk, reset,
+    input logic clk, rst,
     input logic [N-1:0] e_ALU_Result, e_write_data, e_PC_plus_4,
     input logic [W-1:0] e_rd,
     input logic [1:0] e_ResultSrc,
@@ -11,7 +11,7 @@ module Reg_EX_MEM #(parameter N = 32, parameter W = 5)
     output logic m_RegWrite, m_MemWrite
 );
     always_ff @(posedge clk) begin
-        if (reset) begin
+        if (rst) begin
             m_ALU_Result <= 0;
             m_write_data <= 0;
             m_PC_plus_4 <= 0;

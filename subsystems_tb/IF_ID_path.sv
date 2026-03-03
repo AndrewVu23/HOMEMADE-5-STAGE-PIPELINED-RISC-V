@@ -1,6 +1,6 @@
 module IF_ID_path #(parameter N = 32)
 (
-    input logic clk, reset,
+    input logic clk, rst,
     input logic stall,
     input logic w_RegWrite,
     input logic [4:0] address_data,
@@ -19,28 +19,28 @@ assign d_flush = 1'b0;
 
 PC_counter PC_counter_module(
     .clk(clk),  
-    .reset(reset),
+    .rst(rst),
     .f_stall(f_stall),
     .f_PC(f_PC),
     .f_PC_next(f_PC_next)
 );
 
 PC_plus_4_counter PC_plus_4_counter_module(
-    .reset(reset),
+    .rst(rst),
     .f_PC(f_PC),
     .f_PC_plus_4(f_PC_plus_4)
 );
 
 Instr_Mem Instr_Mem_module(
     .clk(clk),
-    .reset(reset),
+    .rst(rst),
     .address(f_PC),
     .instruction_out(f_instruction)
 );
 
 Reg_File Reg_File_module(
     .clk(clk),
-    .reset(reset),
+    .rst(rst),
     .w_RegWrite(w_RegWrite),
     .address1(d_instruction[19:15]),
     .address2(d_instruction[24:20]),

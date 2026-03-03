@@ -1,5 +1,5 @@
 $date
-	Thu Feb 26 15:26:42 2026
+	Tue Mar  3 10:32:31 2026
 $end
 $version
 	Icarus Verilog
@@ -11,12 +11,12 @@ $scope module Processor_tb $end
 $var parameter 32 ! N $end
 $var parameter 32 " W $end
 $var reg 1 # clk $end
-$var reg 1 $ reset $end
+$var reg 1 $ rst $end
 $var reg 1 % stall $end
 $var integer 32 & i [31:0] $end
 $scope module dut $end
 $var wire 1 # clk $end
-$var wire 1 $ reset $end
+$var wire 1 $ rst $end
 $var wire 1 % stall $end
 $var wire 1 ' zero $end
 $var wire 32 ( w_read_address [31:0] $end
@@ -146,7 +146,7 @@ $var reg 1 -" lw_stall $end
 $upscope $end
 $scope module Instr_Mem_module $end
 $var wire 1 # clk $end
-$var wire 1 $ reset $end
+$var wire 1 $ rst $end
 $var wire 32 ." address [31:0] $end
 $var parameter 32 /" N $end
 $var reg 32 0" instruction_out [31:0] $end
@@ -206,13 +206,13 @@ $scope module PC_counter_module $end
 $var wire 1 # clk $end
 $var wire 32 P" f_PC_next [31:0] $end
 $var wire 1 9 f_stall $end
-$var wire 1 $ reset $end
+$var wire 1 $ rst $end
 $var parameter 32 Q" N $end
 $var reg 32 R" f_PC [31:0] $end
 $upscope $end
 $scope module PC_plus_4_counter_module $end
 $var wire 32 S" f_PC [31:0] $end
-$var wire 1 $ reset $end
+$var wire 1 $ rst $end
 $var wire 32 T" f_PC_plus_4 [31:0] $end
 $var parameter 32 U" N $end
 $upscope $end
@@ -220,7 +220,7 @@ $scope module Reg_EX_MEM_module $end
 $var wire 1 # clk $end
 $var wire 32 V" e_ALU_Result [31:0] $end
 $var wire 32 W" e_write_data [31:0] $end
-$var wire 1 $ reset $end
+$var wire 1 $ rst $end
 $var wire 5 X" e_rd [4:0] $end
 $var wire 2 Y" e_ResultSrc [1:0] $end
 $var wire 1 F e_RegWrite $end
@@ -240,7 +240,7 @@ $scope module Reg_File_module $end
 $var wire 5 b" address1 [4:0] $end
 $var wire 5 c" address2 [4:0] $end
 $var wire 1 # clk $end
-$var wire 1 $ reset $end
+$var wire 1 $ rst $end
 $var wire 32 d" write_data [31:0] $end
 $var wire 1 , w_RegWrite $end
 $var wire 32 e" read_address2 [31:0] $end
@@ -264,7 +264,7 @@ $var wire 32 m" d_read_address1 [31:0] $end
 $var wire 32 n" d_read_address2 [31:0] $end
 $var wire 5 o" d_rs1 [4:0] $end
 $var wire 5 p" d_rs2 [4:0] $end
-$var wire 1 $ reset $end
+$var wire 1 $ rst $end
 $var wire 32 q" d_PC_plus_4 [31:0] $end
 $var wire 32 r" d_PC [31:0] $end
 $var wire 32 s" d_ImmExt [31:0] $end
@@ -293,7 +293,7 @@ $var wire 1 R d_stall $end
 $var wire 32 "# f_PC [31:0] $end
 $var wire 32 ## f_PC_plus_4 [31:0] $end
 $var wire 32 $# f_instruction [31:0] $end
-$var wire 1 $ reset $end
+$var wire 1 $ rst $end
 $var parameter 32 %# N $end
 $var reg 32 &# d_PC [31:0] $end
 $var reg 32 '# d_PC_plus_4 [31:0] $end
@@ -307,7 +307,7 @@ $var wire 1 3 m_RegWrite $end
 $var wire 2 +# m_ResultSrc [1:0] $end
 $var wire 5 ,# m_rd [4:0] $end
 $var wire 32 -# m_read_address [31:0] $end
-$var wire 1 $ reset $end
+$var wire 1 $ rst $end
 $var parameter 32 .# N $end
 $var parameter 32 /# W $end
 $var reg 32 0# w_ALU_Result [31:0] $end

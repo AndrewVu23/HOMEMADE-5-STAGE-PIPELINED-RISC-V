@@ -2,7 +2,7 @@ module Reg_File_tb;
     localparam N = 32;
     localparam W = 5;
 
-    logic clk, reset, w_RegWrite;
+    logic clk, rst, w_RegWrite;
     logic [W-1:0] address_1, address_2, address_data;
     logic [N-1:0] write_data;
     logic [N-1:0] read_address_1, read_address_2;
@@ -10,7 +10,7 @@ module Reg_File_tb;
     Reg_File dut(
         .w_RegWrite(w_RegWrite),
         .clk(clk),
-        .reset(reset),
+        .rst(rst),
         .address_1(address_1),
         .address_2(address_2),
         .address_data(address_data),
@@ -45,7 +45,7 @@ module Reg_File_tb;
         end
     endtask
 
-    task check_reset_read(input logic [W-1:0] addr1, input logic [W-1:0] addr2);
+    task check_rst_read(input logic [W-1:0] addr1, input logic [W-1:0] addr2);
         begin
             address_1 = addr1;
             address_2 = addr2;
@@ -60,10 +60,10 @@ module Reg_File_tb;
 
     initial begin
         $monitor("Time: %0t | Reset: %b RegWrite: %b | addr1: %0d addr2: %0d waddr: %0d | r1: %0d r2: %0d",
-                 $time, reset, w_RegWrite, address_1, address_2, address_data, read_address_1, read_address_2);
+                 $time, rst, w_RegWrite, address_1, address_2, address_data, read_address_1, read_address_2);
 
         clk = 0;
-        reset = 1;
+        rst = 1;
         w_RegWrite = 0;
         address_1 = 0;
         address_2 = 0;
@@ -71,10 +71,10 @@ module Reg_File_tb;
         write_data = 0;
 
         #1;
-        check_reset_read(1, 2);
+        check_rst_read(1, 2);
 
         repeat(2) @(posedge clk);
-        reset = 0;
+        rst = 0;
         #1;
 
         for (i = 1; i < 6; i = i + 1)

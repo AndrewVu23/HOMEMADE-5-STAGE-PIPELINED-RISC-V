@@ -1,6 +1,6 @@
 module Reg_ID_EX #(parameter N = 32, parameter W = 5)
 (
-    input logic clk, clr, reset,
+    input logic clk, clr, rst,
     input logic [N-1:0] d_read_address1, d_read_address2, d_ImmExt, d_PC, d_PC_plus_4, 
     input logic [W-1:0] d_rs1, d_rs2, d_rd,
     input logic d_RegWrite, d_ALUSrc, d_MemWrite, d_Branch, d_Jump,
@@ -13,7 +13,7 @@ module Reg_ID_EX #(parameter N = 32, parameter W = 5)
     output logic [2:0] e_ALUCon
 );
 always_ff @(posedge clk) begin
-     if (clr | reset) begin
+     if (clr | rst) begin
         e_read_address1 <= 0;
         e_read_address2 <= 0;
         e_rd <= 0;

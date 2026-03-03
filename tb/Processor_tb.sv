@@ -4,13 +4,13 @@ module Processor_tb;
     localparam N = 32;
     localparam W = 5;
 
-    logic clk, reset, stall;
+    logic clk, rst, stall;
 
     integer i;
 
     Processor #(.N(N), .W(W)) dut(
         .clk(clk),
-        .reset(reset),
+        .rst(rst),
         .stall(stall)
     );
 
@@ -35,7 +35,7 @@ module Processor_tb;
         $dumpfile("Processor.vcd");
         $dumpvars(0, Processor_tb);
 
-        clk = 0; reset = 1; stall = 0; 
+        clk = 0; rst = 1; stall = 0; 
 
         for (i = 0; i < 32; i = i + 1) begin
             dut.Reg_File_module.Registers[i] = 32'b0;
@@ -45,7 +45,7 @@ module Processor_tb;
         $readmemh("instructions.hex", dut.Instr_Mem_module.ROM);
 
         repeat(2) @(posedge clk);
-        #1 reset = 0;
+        #1 rst = 0;
 
         $display("Time: %0t | Reset Released", $time);
 
