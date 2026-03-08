@@ -60,80 +60,77 @@ module Processor_tb;
 
         // Phase 1: Basic Math & EX-EX Forwarding
         $display("Phase 1: Basic Math & EX-EX Forwarding");
-        check_register(5'd1, 32'd5);       // addi x1, x0, 5
-        check_register(5'd2, 32'd10);      // addi x2, x0, 10
-        check_register(5'd3, 32'd15);      // add  x3, x1, x2
-        check_register(5'd4, 32'd10);      // sub  x4, x3, x1
+        check_register(5'd1, 32'd5); // addi x1, x0, 5
+        check_register(5'd2, 32'd10); // addi x2, x0, 10
+        check_register(5'd3, 32'd15); // add  x3, x1, x2
+        check_register(5'd4, 32'd10); // sub  x4, x3, x1
 
         // Phase 2: MEM-EX Forwarding
         $display("Phase 2: MEM-EX Forwarding");
-        check_register(5'd5, 32'd15);      // add  x5, x1, x2
-        check_register(5'd0, 32'd0);       // NOP (x0 always 0)
-        check_register(5'd6, 32'd5);       // sub  x6, x5, x2
+        check_register(5'd5, 32'd15); // add  x5, x1, x2
+        check_register(5'd0, 32'd0); // NOP (x0 always 0)
+        check_register(5'd6, 32'd5); // sub  x6, x5, x2
         
         // Phase 3: LW/SW & Load-Use Stall
         $display("Phase 3: LW/SW & Load-Use Stall");
-        check_register(5'd7, 32'd5);       // lw   x7, 0(x0)
-        check_register(5'd8, 32'd10);      // add  x8, x7, x1
+        check_register(5'd7, 32'd5); // lw   x7, 0(x0)
+        check_register(5'd8, 32'd10); // add  x8, x7, x1
 
         // Phase 4: Control Hazards & Flushing (BEQ taken)
         $display("Phase 4: Control Hazards & Flushing");
-        check_register(5'd9, 32'd0);       // Flushed (should stay 0)
-        check_register(5'd10, 32'd0);      // Not written (should stay 0)
+        check_register(5'd9, 32'd0); // Flushed (should stay 0)
+        check_register(5'd10, 32'd0); // Not written (should stay 0)
 
         // Phase 5: Branch Not Taken & Logic
         $display("Phase 5: Branch Not Taken & ALU Logic");
-        check_register(5'd11, 32'd0);      // and  x11, x1, x2 = 0
-        check_register(5'd12, 32'd15);     // or   x12, x1, x2 = 15
+        check_register(5'd11, 32'd0); // and  x11, x1, x2 = 0
+        check_register(5'd12, 32'd15); // or   x12, x1, x2 = 15
 
         // Phase 6: JAL & LUI
         $display("Phase 6: JAL & LUI");
-        check_register(5'd13, 32'd68);     // jal  x13, 12 -> saves PC+4 = 0x44 = 68
-        check_register(5'd14, 32'd0);      // Flushed (should stay 0)
-        check_register(5'd15, 32'd16384);  // lui  x15, 4  -> 4 << 12 = 16384
+        check_register(5'd13, 32'd68); // jal  x13, 12 -> saves PC+4 = 0x44 = 68
+        check_register(5'd14, 32'd0); // Flushed (should stay 0)
+        check_register(5'd15, 32'd16384); // lui  x15, 4  -> 4 << 12 = 16384
 
-        // Phase 7: SLT (Set Less Than) — R-type
-        $display("Phase 7: SLT (R-type)");
-        check_register(5'd16, 32'd0);      // slt  x16, x6, x1 -> 5 < 5 = 0
-        check_register(5'd17, 32'd1);      // slt  x17, x0, x1 -> 0 < 5 = 1
+        // Phase 7: SLT then SLTU (x16, x17 overwritten by Phase 15)
+        $display("Phase 7/15: SLT -> SLTU/SLTIU (final values)");
+        check_register(5'd16, 32'd1); // sltu x16, x1, x29 -> unsigned: 5 < 0xFFFFFFF0 = 1
+        check_register(5'd17, 32'd1); // sltiu x17, x1, -1 -> unsigned: 5 < 0xFFFFFFFF = 1
 
-        // Phase 8: SLTI (Set Less Than Immediate) — I-type
-        $display("Phase 8: SLTI (I-type)");
-        check_register(5'd18, 32'd0);      // slti x18, x1, 3  -> 5 < 3 = 0
-        check_register(5'd19, 32'd1);      // slti x19, x1, 10 -> 5 < 10 = 1
+        // Phase 8: SLTI
+        $display("Phase 8: SLTI");
+        check_register(5'd18, 32'd0); // slti x18, x1, 3 -> 5 < 3 = 0
+        check_register(5'd19, 32'd1); // slti x19, x1, 10 -> 5 < 10 = 1
 
-        // Phase 9: ORI (OR Immediate) — I-type
-        $display("Phase 9: ORI (I-type)");
-        check_register(5'd20, 32'd15);     // ori  x20, x1, 0xA -> 0101 | 1010 = 1111 = 15
+        // Phase 9: ORI
+        $display("Phase 9: ORI");
+        check_register(5'd20, 32'd15); // ori  x20, x1, 0xA -> 0101 | 1010 = 1111 = 15
 
-        // Phase 10: ANDI (AND Immediate) — I-type
-        $display("Phase 10: ANDI (I-type)");
-        check_register(5'd21, 32'd1);      // andi x21, x1, 0x3 -> 0101 & 0011 = 0001 = 1
+        // Phase 10: ANDI
+        $display("Phase 10: ANDI");
+        check_register(5'd21, 32'd1); // andi x21, x1, 0x3 -> 0101 & 0011 = 0001 = 1
 
-        // Phase 11: Negative Numbers & Signed Comparisons
-        $display("Phase 11: Negative Numbers & Signed Comparisons");
-        check_register(5'd22, 32'hFFFFFFFF); // addi x22, x0, -1 -> 0xFFFFFFFF
-        check_register(5'd23, 32'd1);        // slt  x23, x22, x0 -> -1 < 0 = 1
-        check_register(5'd24, 32'd0);        // slt  x24, x0, x22 -> 0 < -1 = 0
-        check_register(5'd31, 32'd1);        // slti x31, x22, 0  -> -1 < 0 = 1
+        // Phase 11: XOR & XORI
+        $display("Phase 11: XOR & XORI");
+        check_register(5'd22, 32'd15); // xor  x22, x1, x2 -> 0101 ^ 1010 = 1111 = 15
+        check_register(5'd23, 32'd10); // xori x23, x1, 0xF -> 0101 ^ 1111 = 1010 = 10
 
-        // Phase 12: SW/LW at Different Address & Load-Use Forwarding
-        $display("Phase 12: SW/LW at Different Address");
-        check_register(5'd25, 32'd15);      // lw   x25, 4(x0) -> loaded 15
-        check_register(5'd26, 32'd15);      // add  x26, x25, x0 -> 15 + 0 = 15
+        // Phase 12: SLL & SLLI
+        $display("Phase 12: SLL & SLLI");
+        check_register(5'd24, 32'd5120); // sll  x24, x1, x2 -> 5 << 10 = 5120
+        check_register(5'd25, 32'd20); // slli x25, x1, 2 -> 5 << 2 = 20
 
-        // Phase 13: OR/AND with Full-Width Operands
-        $display("Phase 13: OR/AND with Full-Width Operands");
-        check_register(5'd27, 32'hFFFFFFFF); // or   x27, x22, x1 -> 0xFFFFFFFF | 5 = 0xFFFFFFFF
-        check_register(5'd28, 32'd5);        // and  x28, x22, x1 -> 0xFFFFFFFF & 5 = 5
+        // Phase 13: SRL & SRLI
+        $display("Phase 13: SRL & SRLI");
+        check_register(5'd27, 32'd240); // addi x27, x0, 240 -> setup
+        check_register(5'd26, 32'd0); // srl  x26, x3, x1 -> 15 >> 5 = 0
+        check_register(5'd28, 32'd15); // srli x28, x27, 4 -> 240 >> 4 = 15
 
-        // Phase 14: LUI with Large Upper Immediate
-        $display("Phase 14: LUI with Large Immediate");
-        check_register(5'd29, 32'hABCDE000); // lui  x29, 0xABCDE -> 0xABCDE000
-
-        // Phase 15: SUB with Additional Values
-        $display("Phase 15: SUB with Additional Values");
-        check_register(5'd30, 32'd10);      // sub  x30, x3, x1 -> 15 - 5 = 10
+        // Phase 14: SRA & SRAI
+        $display("Phase 14: SRA & SRAI");
+        check_register(5'd29, 32'hFFFFFFF0); // addi x29, x0, -16 -> 0xFFFFFFF0
+        check_register(5'd30, 32'hFFFFFFFF); // sra  x30, x29, x1 -> -16 >>> 5 = -1
+        check_register(5'd31, 32'hFFFFFFFC); // srai x31, x29, 2 -> -16 >>> 2 = -4
 
         $display("============================================================");
         $display("RESULTS: %0d PASSED, %0d FAILED out of %0d total", 

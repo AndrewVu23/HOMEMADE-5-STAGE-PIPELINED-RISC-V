@@ -2,7 +2,7 @@ module ALU_tb;
     localparam N = 32;
 
     logic [N-1:0] A, B;
-    logic [2:0] e_ALUCon;
+    logic [4:0] e_ALUCon;
     logic zero;
     logic [N-1:0] e_ALU_Result;
 
@@ -14,7 +14,7 @@ module ALU_tb;
         .e_ALU_Result(e_ALU_Result)
     );
 
-    task check(input logic [2:0] alucon, input logic [N-1:0] a, input logic [N-1:0] b,
+    task check(input logic [4:0] alucon, input logic [N-1:0] a, input logic [N-1:0] b,
                input logic [N-1:0] expect_result, input logic expect_zero);
         begin
             e_ALUCon = alucon;
@@ -35,49 +35,70 @@ module ALU_tb;
         
         $monitor("Time: %0t | ALUCon: %b | A: %h B: %h | Result: %h zero: %b", $time, e_ALUCon, A, B, e_ALU_Result, zero);
 
-        // ADD: 10 + 25 = 35
-        check(3'b000, 32'd10, 32'd25, 32'd35, 1'b0);
-        // ADD: -1 + 1 = 0 (signed wrap)
-        check(3'b000, 32'hFFFFFFFF, 32'd1, 32'd0, 1'b1);
-        // ADD: 0 + 0 = 0
-        check(3'b000, 32'd0, 32'd0, 32'd0, 1'b1);
-        // ADD: 100 + 200 = 300
-        check(3'b000, 32'd100, 32'd200, 32'd300, 1'b0);
-        // SUB: 35 - 10 = 25
-        check(3'b001, 32'd35, 32'd10, 32'd25, 1'b0);
-        // SUB: 0 - 1 = -1
-        check(3'b001, 32'd0, 32'd1, 32'hFFFFFFFF, 1'b0);
-        // SUB: 5 - 5 = 0
-        check(3'b001, 32'd5, 32'd5, 32'd0, 1'b1);
-        // SUB: 10 - 100 = -90
-        check(3'b001, 32'd10, 32'd100, 32'hFFFFFFA6, 1'b0);
-        // SLT signed: 1 < 5 -> 1
-        check(3'b101, 32'd1, 32'd5, 32'd1, 1'b0);
-        // SLT: 5 < 1 -> 0
-        check(3'b101, 32'd5, 32'd1, 32'd0, 1'b1);
-        // SLT: -1 < 0 -> 1 (signed)
-        check(3'b101, 32'hFFFFFFFF, 32'd0, 32'd1, 1'b0);
-        // SLT: 0 < -1 -> 0 (signed, 0 greater than -1)
-        check(3'b101, 32'd0, 32'hFFFFFFFF, 32'd0, 1'b1);
-        // SLT: 0 < 0 -> 0
-        check(3'b101, 32'd0, 32'd0, 32'd0, 1'b1);
-        // OR: 0xFF00 | 0x00FF = 0xFFFF
-        check(3'b011, 32'h0000FF00, 32'h000000FF, 32'h0000FFFF, 1'b0);
-        // OR: 0 | 0 = 0
-        check(3'b011, 32'd0, 32'd0, 32'd0, 1'b1);
-        // OR: mixed bit pattern
-        check(3'b011, 32'h12345678, 32'h87654321, 32'h97755779, 1'b0);
-        // AND: 0xFFFF & 0xFF00 = 0xFF00
-        check(3'b010, 32'h0000FFFF, 32'h0000FF00, 32'h0000FF00, 1'b0);
-        // AND: disjoint masks -> 0
-        check(3'b010, 32'hFFFF0000, 32'h0000FFFF, 32'd0, 1'b1);
-        // AND: 0 & 0 = 0
-        check(3'b010, 32'd0, 32'd0, 32'd0, 1'b1);
+        // ADD (00000)
+        check(5'b00000, 32'd10, 32'd25, 32'd35, 1'b0); // 10 + 25 = 35
+        check(5'b00000, 32'hFFFFFFFF, 32'd1, 32'd0, 1'b1); // -1 + 1 = 0 (overflow wrap)
+        check(5'b00000, 32'd0, 32'd0, 32'd0, 1'b1); // 0 + 0 = 0
+        check(5'b00000, 32'd100, 32'd200, 32'd300, 1'b0); // 100 + 200 = 300
+
+        // SUB (00001)
+        check(5'b00001, 32'd35, 32'd10, 32'd25, 1'b0); // 35 - 10 = 25
+        check(5'b00001, 32'd0, 32'd1, 32'hFFFFFFFF, 1'b0); // 0 - 1 = -1
+        check(5'b00001, 32'd5, 32'd5, 32'd0, 1'b1); // 5 - 5 = 0 (zero flag)
+        check(5'b00001, 32'd10, 32'd100, 32'hFFFFFFA6, 1'b0); // 10 - 100 = -90
+
+        // AND (00010)
+        check(5'b00010, 32'h0000FFFF, 32'h0000FF00, 32'h0000FF00, 1'b0); // overlapping masks
+        check(5'b00010, 32'hFFFF0000, 32'h0000FFFF, 32'd0, 1'b1); // disjoint masks -> 0
+        check(5'b00010, 32'd0, 32'd0, 32'd0, 1'b1); // 0 & 0 = 0
+
+        // OR (00011)
+        check(5'b00011, 32'h0000FF00, 32'h000000FF, 32'h0000FFFF, 1'b0); // adjacent bytes merge
+        check(5'b00011, 32'd0, 32'd0, 32'd0, 1'b1); // 0 | 0 = 0
+        check(5'b00011, 32'h12345678, 32'h87654321, 32'h97755779, 1'b0); // mixed bit pattern
+
+        // XOR (00100)
+        check(5'b00100, 32'hFF00FF00, 32'h0F0F0F0F, 32'hF00FF00F, 1'b0); // alternating nibbles
+        check(5'b00100, 32'hAAAAAAAA, 32'h55555555, 32'hFFFFFFFF, 1'b0); // all bits flip
+        check(5'b00100, 32'hDEADBEEF, 32'hDEADBEEF, 32'd0, 1'b1); // x ^ x = 0
+        check(5'b00100, 32'd5, 32'd10, 32'd15, 1'b0); // 0101 ^ 1010 = 1111
+
+        // SLT signed (00101)
+        check(5'b00101, 32'd1, 32'd5, 32'd1, 1'b0); // 1 < 5 = true
+        check(5'b00101, 32'd5, 32'd1, 32'd0, 1'b1); // 5 < 1 = false
+        check(5'b00101, 32'hFFFFFFFF, 32'd0, 32'd1, 1'b0); // -1 < 0 = true (signed)
+        check(5'b00101, 32'd0, 32'hFFFFFFFF, 32'd0, 1'b1); // 0 < -1 = false (signed)
+        check(5'b00101, 32'd0, 32'd0, 32'd0, 1'b1); // 0 < 0 = false (equal)
+
+        // LUI Pass B (00110)
+        check(5'b00110, 32'd999, 32'hABCDE000, 32'hABCDE000, 1'b0); // ignores A, passes B
+        check(5'b00110, 32'd0, 32'd0, 32'd0, 1'b1); // pass zero
+
+        // SLL (00111)
+        check(5'b00111, 32'd1, 32'd0, 32'd1, 1'b0); // 1 << 0 = 1
+        check(5'b00111, 32'd1, 32'd4, 32'd16, 1'b0); // 1 << 4 = 16
+        check(5'b00111, 32'd5, 32'd10, 32'd5120, 1'b0); // 5 << 10 = 5120
+        check(5'b00111, 32'd5, 32'd2, 32'd20, 1'b0); // 5 << 2 = 20
+        check(5'b00111, 32'hFFFFFFFF, 32'd16, 32'hFFFF0000, 1'b0); // shift out low bits
+
+        // SRL (01000)
+        check(5'b01000, 32'd16, 32'd4, 32'd1, 1'b0); // 16 >> 4 = 1
+        check(5'b01000, 32'd240, 32'd4, 32'd15, 1'b0); // 0xF0 >> 4 = 15
+        check(5'b01000, 32'd15, 32'd5, 32'd0, 1'b1); // 15 >> 5 = 0
+        check(5'b01000, 32'hFFFFFFFF, 32'd16, 32'h0000FFFF, 1'b0); // logical: fills with 0s
+
+        // SRA (01001)
+        check(5'b01001, 32'hFFFFFFF0, 32'd2, 32'hFFFFFFFC, 1'b0); // -16 >>> 2 = -4
+        check(5'b01001, 32'hFFFFFFF0, 32'd5, 32'hFFFFFFFF, 1'b0); // -16 >>> 5 = -1
+        check(5'b01001, 32'd240, 32'd4, 32'd15, 1'b0); // positive: same as SRL
+        check(5'b01001, 32'h80000000, 32'd31, 32'hFFFFFFFF, 1'b0); // MSB fills with 1
         
-        // default/unsupported ALUCon -> 0
-        check(3'b111, 32'd10, 32'd5, 32'd0, 1'b1);
-        // default ALUCon 3'b100 -> 0
-        check(3'b100, 32'd99, 32'd99, 32'd0, 1'b1);
+        // SLTU unsigned (01010)
+        check(5'b01010, 32'd5, 32'hFFFFFFF0, 32'd1, 1'b0); // 5 < 0xFFFFFFF0 = true (unsigned)
+        check(5'b01010, 32'hFFFFFFF0, 32'd5, 32'd0, 1'b1); // 0xFFFFFFF0 < 5 = false (unsigned)
+        check(5'b01010, 32'hFFFFFFFF, 32'd0, 32'd0, 1'b1); // MAX < 0 = false
+        check(5'b01010, 32'd0, 32'hFFFFFFFF, 32'd1, 1'b0); // 0 < MAX = true
+        check(5'b01010, 32'd0, 32'd0, 32'd0, 1'b1); // 0 < 0 = false
 
         $finish;
     end
