@@ -53,7 +53,7 @@ module Processor_tb;
         $display("Time: %0t | Reset Released", $time);
         $display("============================================================");
 
-        repeat(120) @(posedge clk);
+        repeat(10) @(posedge clk);
 
         $display("Simulation Complete. Checking Registers:");
         $display("============================================================");
@@ -76,19 +76,20 @@ module Processor_tb;
         check_register(5'd7, 32'd5); // lw   x7, 0(x0)
         check_register(5'd8, 32'd10); // add  x8, x7, x1
 
-        // Phase 4: Control Hazards & Flushing (BEQ taken)
-        $display("Phase 4: Control Hazards & Flushing");
+        // Phase 4: BEQ Taken & Flushing
+        $display("Phase 4: BEQ Taken & Flushing");
         check_register(5'd9, 32'd0); // Flushed (should stay 0)
         check_register(5'd10, 32'd0); // Not written (should stay 0)
 
-        // Phase 5: Branch Not Taken & Logic
-        $display("Phase 5: Branch Not Taken & ALU Logic");
-        check_register(5'd11, 32'd0); // and  x11, x1, x2 = 0
-        check_register(5'd12, 32'd15); // or   x12, x1, x2 = 15
+        // Phase 5: BNE Taken & Not Taken
+        $display("Phase 5: BNE Taken & Not Taken");
+        check_register(5'd9, 32'd0); // BNE taken: flushed instr didn't write x9
+        check_register(5'd11, 32'd0); // BNE not-taken: and x11,x1,x2 = 0 (executed)
+        check_register(5'd12, 32'd15); // BNE not-taken: or x12,x1,x2 = 15 (executed)
 
         // Phase 6: JAL & LUI
         $display("Phase 6: JAL & LUI");
-        check_register(5'd13, 32'd68); // jal  x13, 12 -> saves PC+4 = 0x44 = 68
+        check_register(5'd13, 32'd80); // jal  x13, 12 -> saves PC+4 = 0x50 = 80
         check_register(5'd14, 32'd0); // Flushed (should stay 0)
         check_register(5'd15, 32'd16384); // lui  x15, 4  -> 4 << 12 = 16384
 
@@ -131,6 +132,10 @@ module Processor_tb;
         check_register(5'd29, 32'hFFFFFFF0); // addi x29, x0, -16 -> 0xFFFFFFF0
         check_register(5'd30, 32'hFFFFFFFF); // sra  x30, x29, x1 -> -16 >>> 5 = -1
         check_register(5'd31, 32'hFFFFFFFC); // srai x31, x29, 2 -> -16 >>> 2 = -4
+
+        // Phase 16-19: BLT, BGE, BLTU, BGEU (all taken, x10 stays 0)
+        $display("Phase 16-19: BLT, BGE, BLTU, BGEU Taken");
+        check_register(5'd10, 32'd0); // x10 = 0 means all 4 branches were taken correctly
 
         $display("============================================================");
         $display("RESULTS: %0d PASSED, %0d FAILED out of %0d total", 

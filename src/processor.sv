@@ -17,6 +17,7 @@ logic [W-1:0] e_rs1, e_rs2, e_rd;
 logic e_RegWrite, e_ALUSrc, e_MemWrite, e_Branch, e_Jump, e_PCSrc;
 logic [1:0] e_ResultSrc;
 logic [4:0] e_ALUCon;
+logic [2:0] e_funct3;
 logic e_flush;
 logic [1:0] forwardA, forwardB;
 logic [N-1:0] e_ALU_Result, A, B, e_PC_Target;
@@ -148,7 +149,9 @@ ALU ALU_module(
 );
 
 J_and_B J_and_B_module(
-    .zero(zero),
+    .A(A),
+    .B(e_write_data),
+    .e_funct3(e_funct3),
     .e_PCSrc(e_PCSrc),
     .e_Jump(e_Jump),
     .e_Branch(e_Branch)
@@ -208,7 +211,9 @@ Reg_ID_EX Reg_ID_EX_module(
     .e_Branch(e_Branch),
     .e_Jump(e_Jump),
     .e_ResultSrc(e_ResultSrc),
-    .e_ALUCon(e_ALUCon)
+    .e_ALUCon(e_ALUCon),
+    .d_funct3(d_instruction[14:12]),
+    .e_funct3(e_funct3)
 );
 
 Reg_EX_MEM Reg_EX_MEM_module(
