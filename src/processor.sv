@@ -21,7 +21,6 @@ logic [2:0] e_funct3;
 logic e_flush;
 logic [1:0] forwardA, forwardB;
 logic [N-1:0] e_ALU_Result, A, B, e_PC_Target;
-logic zero;
 logic [N-1:0] e_write_data;
 logic [N-1:0] m_ALU_Result, m_write_data, m_PC_plus_4, m_read_address;
 logic [W-1:0] m_rd;
@@ -144,8 +143,7 @@ ALU ALU_module(
     .e_ALUCon(e_ALUCon),
     .e_ALU_Result(e_ALU_Result),
     .A(A),
-    .B(B),
-    .zero(zero)
+    .B(B)
 );
 
 J_and_B J_and_B_module(

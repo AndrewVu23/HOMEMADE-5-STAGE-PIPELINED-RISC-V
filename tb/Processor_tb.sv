@@ -53,7 +53,7 @@ module Processor_tb;
         $display("Time: %0t | Reset Released", $time);
         $display("============================================================");
 
-        repeat(10) @(posedge clk);
+        repeat(150) @(posedge clk);
 
         $display("Simulation Complete. Checking Registers:");
         $display("============================================================");
@@ -134,7 +134,7 @@ module Processor_tb;
         check_register(5'd31, 32'hFFFFFFFC); // srai x31, x29, 2 -> -16 >>> 2 = -4
 
         // Phase 16-19: BLT, BGE, BLTU, BGEU (all taken, x10 stays 0)
-        $display("Phase 16-19: BLT, BGE, BLTU, BGEU Taken");
+        $display("Phase 16-19: BLT, BGE, BLTU, BGEU Taken"); 
         check_register(5'd10, 32'd0); // x10 = 0 means all 4 branches were taken correctly
 
         $display("============================================================");

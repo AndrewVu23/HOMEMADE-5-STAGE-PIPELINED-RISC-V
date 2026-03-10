@@ -11,7 +11,7 @@ module Reg_ID_EX #(parameter N = 32, parameter W = 5)
     output logic [W-1:0] e_rs1, e_rs2, e_rd,
     output logic e_RegWrite, e_ALUSrc, e_MemWrite, e_Branch, e_Jump,
     output logic [1:0] e_ResultSrc,
-    output logic [4:0] e_ALUCon
+    output logic [4:0] e_ALUCon,
     output logic [2:0] e_funct3
 );
 always_ff @(posedge clk) begin
