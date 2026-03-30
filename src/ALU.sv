@@ -1,6 +1,6 @@
 module ALU #(parameter N = 32)
 (
-  input logic [N-1:0] A, B,
+  input logic [N-1:0] A, B, e_PC,
   input logic [4:0] e_ALUCon,
   output logic [N-1:0] e_ALU_Result
 );
@@ -23,6 +23,7 @@ always @(*) begin
     5'b01000: e_ALU_Result = A >> B[4:0]; // SRL
     5'b01001: e_ALU_Result = signed_A >>> B[4:0]; // SRA
     5'b01010: e_ALU_Result = (A < B) ? 32'h1 : 32'h0; // SLTU
+    5'b01011: e_ALU_Result = e_PC + B; // AUIPC
     default:  e_ALU_Result = 32'h0;
   endcase
 end

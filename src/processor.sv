@@ -143,7 +143,8 @@ ALU ALU_module(
     .e_ALUCon(e_ALUCon),
     .e_ALU_Result(e_ALU_Result),
     .A(A),
-    .B(B)
+    .B(B),
+    .e_PC(e_PC)
 );
 
 J_and_B J_and_B_module(

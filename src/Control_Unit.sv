@@ -30,7 +30,7 @@ module Control_Unit(
         d_RegWrite = 1; d_ALUSrc = 1'bx; d_MemWrite = 0; d_ResultSrc = 2'b10; d_Branch = 0; d_Jump = 1;
         d_ImmSrc = 3'b011; ALUOp = 2'bxx;
       end
-      7'b0110111: begin // U-type (lui)
+      7'b0110111, 7'b0010111: begin // U-type (lui)
         d_RegWrite = 1; d_ALUSrc = 1; d_MemWrite = 0; d_ResultSrc = 2'b00; d_Branch = 0; d_Jump = 0;
         d_ImmSrc = 3'b100; ALUOp = 2'b11;
       end

@@ -12,7 +12,7 @@ always @(*) begin
   case(ALUOp)
     2'b00: d_ALUCon = 5'b00000; // ADD (lw,sw)
     2'b01: d_ALUCon = 5'b00001; // SUB (beq)
-    2'b11: d_ALUCon = 5'b00110; // LUI
+    2'b11: d_ALUCon = op5 ? 5'b00110 : 5'b01011; // LUI : AUIPC
     2'b10: begin // R-type / I-type ALU
       if (funct3 == 3'b000) begin
         if (op5_funct7_5 == 2'b11) d_ALUCon = 5'b00001; // SUB

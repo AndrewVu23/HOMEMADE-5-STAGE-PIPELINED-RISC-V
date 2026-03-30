@@ -91,5 +91,8 @@ fff0b893 // A0: sltiu x17, x1, -1   (unsigned: 5 < 0xFFFFFFFF = 1, x17 = 1)
 01300513 // CC: addi x10, x0, 19    (BAD: flushed)
 01300513 // D0: addi x10, x0, 19    (BAD: flushed)
 
+// Phase 20: AUIPC
+00001517 // D4: auipc x10, 1        (x10 = PC + (1 << 12) = 0xD4 + 0x1000 = 0x10D4 = 4308)
+
 // End Program (Infinite Loop)
-00000063 // D4: beq  x0, x0, 0      (Jump to self)
+00000063 // D8: beq  x0, x0, 0      (Jump to self)
