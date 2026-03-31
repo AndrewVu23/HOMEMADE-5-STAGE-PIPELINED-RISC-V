@@ -2,8 +2,10 @@
 
 module Data_Mem #(parameter N = 32)
 (
-  input logic clk, m_MemWrite,
-  input logic [N-1:0] address, m_write_data,
+  input logic clk,
+  input logic m_MemWrite,
+  input logic [N-1:0] address,
+  input logic [N-1:0] m_write_data,
   output logic [N-1:0] m_read_address
 );
   logic [N-1:0] RAM [1023:0];

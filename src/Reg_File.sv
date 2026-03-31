@@ -2,10 +2,15 @@
 
 module Reg_File #(parameter N = 32, parameter W = 5)
 (  
-    input logic w_RegWrite, clk, rst,
-    input logic [W-1:0] address1, address2, address_data,
+    input logic clk,
+    input logic rst,
+    input logic w_RegWrite,
+    input logic [W-1:0] address1,
+    input logic [W-1:0] address2,
+    input logic [W-1:0] address_data,
     input logic [N-1:0] write_data,
-    output logic [N-1:0] read_address1, read_address2
+    output logic [N-1:0] read_address1,
+    output logic [N-1:0] read_address2
 );
 
 reg [31:0] Registers [31:0];

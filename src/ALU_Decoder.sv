@@ -3,7 +3,8 @@
 module ALU_Decoder(
   input logic [2:0] funct3,
   input logic [1:0] ALUOp,
-  input logic funct7_5, op5,
+  input logic funct7_5,
+  input logic op5,
   output logic [4:0] d_ALUCon
 );
 wire [1:0] op5_funct7_5;

@@ -2,7 +2,8 @@
 
 module Instr_Mem #(parameter N = 32)
 (
-    input logic rst, clk,
+    input logic clk,
+    input logic rst,
     input logic [N-1:0] address,
     output logic [N-1:0] instruction_out
 );

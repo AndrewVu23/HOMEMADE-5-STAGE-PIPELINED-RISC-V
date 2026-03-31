@@ -2,7 +2,8 @@
 
 module MuxB #(parameter N = 32)
 (
-    input logic [N-1:0] e_write_data, e_ImmExt,
+    input logic [N-1:0] e_write_data,
+    input logic [N-1:0] e_ImmExt,
     input logic e_ALUSrc,
     output logic [N-1:0] B
 );

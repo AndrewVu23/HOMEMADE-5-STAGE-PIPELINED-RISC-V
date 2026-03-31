@@ -2,7 +2,9 @@
 
 module ALU #(parameter N = 32)
 (
-  input logic [N-1:0] A, B, e_PC,
+  input logic [N-1:0] A,
+  input logic [N-1:0] B,
+  input logic [N-1:0] e_PC,
   input logic [4:0] e_ALUCon,
   output logic [N-1:0] e_ALU_Result
 );

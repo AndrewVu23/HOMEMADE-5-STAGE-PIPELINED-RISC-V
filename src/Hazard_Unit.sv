@@ -2,11 +2,23 @@
 
 module Hazard_Unit #(parameter N = 32, parameter W = 5)
 (
-    input logic [W-1:0] e_rd, e_rs1, e_rs2, m_rd, w_rd, d_rs1, d_rs2,
+    input logic [W-1:0] e_rd,
+    input logic [W-1:0] e_rs1,
+    input logic [W-1:0] e_rs2,
+    input logic [W-1:0] m_rd,
+    input logic [W-1:0] w_rd,
+    input logic [W-1:0] d_rs1,
+    input logic [W-1:0] d_rs2,
     input logic [1:0] e_ResultSrc,
-    input logic m_RegWrite, w_RegWrite, e_PCSrc,
-    output logic f_stall, d_stall, d_flush, e_flush,
-    output logic [1:0] forwardA, forwardB
+    input logic m_RegWrite,
+    input logic w_RegWrite,
+    input logic e_PCSrc,
+    output logic f_stall,
+    output logic d_stall,
+    output logic d_flush,
+    output logic e_flush,
+    output logic [1:0] forwardA,
+    output logic [1:0] forwardB
 );
 logic lw_stall;
 

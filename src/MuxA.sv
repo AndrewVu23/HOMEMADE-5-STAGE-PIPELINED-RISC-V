@@ -2,7 +2,9 @@
 
 module MuxA #(parameter N = 32)
 (
-    input logic [N-1:0] e_read_address1, w_Result, m_ALU_Result,
+    input logic [N-1:0] e_read_address1,
+    input logic [N-1:0] w_Result,
+    input logic [N-1:0] m_ALU_Result,
     input logic [1:0] forwardA,
     output logic [N-1:0] A
 );

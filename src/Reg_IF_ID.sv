@@ -2,9 +2,16 @@
 
 module Reg_IF_ID #(parameter N = 32)
 (
-    input logic [N-1:0] f_instruction, f_PC, f_PC_plus_4,
-    input logic clk, clr, d_stall, rst, 
-    output logic [N-1:0] d_instruction, d_PC, d_PC_plus_4
+    input logic clk,
+    input logic clr,
+    input logic d_stall,
+    input logic rst,
+    input logic [N-1:0] f_instruction,
+    input logic [N-1:0] f_PC,
+    input logic [N-1:0] f_PC_plus_4,
+    output logic [N-1:0] d_instruction,
+    output logic [N-1:0] d_PC,
+    output logic [N-1:0] d_PC_plus_4
 );
 always_ff @(posedge clk) begin
     if (clr | rst) begin

@@ -2,9 +2,11 @@
 
 module J_and_B #(parameter N = 32)
 (
-    input logic [N-1:0] A, B,
+    input logic [N-1:0] A,
+    input logic [N-1:0] B,
     input logic [2:0] e_funct3,
-    input logic e_Jump, e_Branch,
+    input logic e_Jump,
+    input logic e_Branch,
     output logic e_PCSrc
 );
 logic branch_taken, eq, lt, ltu;
