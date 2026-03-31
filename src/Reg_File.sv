@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Reg_File #(parameter N = 32, parameter W = 5)
 (  
     input logic w_RegWrite, clk, rst,

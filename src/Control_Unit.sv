@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Control_Unit(
   input logic [6:0] opcode,
   output logic d_RegWrite, d_ALUSrc, d_MemWrite, d_Branch, d_Jump,

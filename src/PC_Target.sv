@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module PC_Target #(parameter N = 32)
 (
     input logic [N-1:0] e_PC, e_ImmExt,

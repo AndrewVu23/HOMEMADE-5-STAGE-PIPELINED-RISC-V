@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Reg_EX_MEM #(parameter N = 32, parameter W = 5)
 (
     input logic clk, rst,

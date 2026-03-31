@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module PC_counter #(parameter N = 32)
 (
   input logic clk, rst, f_stall,

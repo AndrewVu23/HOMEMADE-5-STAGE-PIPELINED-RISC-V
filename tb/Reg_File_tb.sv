@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Reg_File_tb;
     localparam N = 32;
     localparam W = 5;

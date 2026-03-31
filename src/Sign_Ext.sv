@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Sign_Ext #(parameter N = 32)
 (
   input logic [2:0] d_ImmSrc,

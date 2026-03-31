@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Mux_Reg_to_B #(parameter N = 32)
 (
     input logic [N-1:0] e_read_address2, w_Result, m_ALU_Result,

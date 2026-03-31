@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module J_and_B #(parameter N = 32)
 (
     input logic [N-1:0] A, B,

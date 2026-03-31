@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Mux_WB_to_Reg #(parameter N = 32)
 (
     input logic [N-1:0] w_ALU_Result, w_read_address, w_PC_plus_4,

@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Reg_MEM_WB #(parameter N = 32, parameter W = 5)
 (
     input clk, rst,

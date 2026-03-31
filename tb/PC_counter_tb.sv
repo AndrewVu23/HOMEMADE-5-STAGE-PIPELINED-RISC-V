@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module PC_counter_tb;
     localparam N = 32;
 

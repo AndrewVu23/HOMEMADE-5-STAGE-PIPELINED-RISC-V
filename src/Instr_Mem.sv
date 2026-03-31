@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Instr_Mem #(parameter N = 32)
 (
     input logic rst, clk,

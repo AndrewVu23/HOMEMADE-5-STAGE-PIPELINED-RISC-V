@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module MuxA #(parameter N = 32)
 (
     input logic [N-1:0] e_read_address1, w_Result, m_ALU_Result,

@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module PC_plus_4_counter #(parameter N = 32)
 (
     input logic rst,

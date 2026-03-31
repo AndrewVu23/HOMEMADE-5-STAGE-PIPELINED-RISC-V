@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Hazard_Unit #(parameter N = 32, parameter W = 5)
 (
     input logic [W-1:0] e_rd, e_rs1, e_rs2, m_rd, w_rd, d_rs1, d_rs2,

@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module Instr_Mem_tb;
     localparam N = 32;
     logic rst, clk;
