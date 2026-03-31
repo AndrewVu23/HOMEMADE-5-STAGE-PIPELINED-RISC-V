@@ -10,6 +10,7 @@ module Data_Mem #(parameter N = 32)
 );
   logic [N-1:0] RAM [1023:0];
 
+  // Same trick here (Instr_Mem)
   assign m_read_address = RAM[address[11:2]];
 
   always @(posedge clk) begin

@@ -94,5 +94,11 @@ fff0b893 // A0: sltiu x17, x1, -1   (unsigned: 5 < 0xFFFFFFFF = 1, x17 = 1)
 // Phase 20: AUIPC
 00001517 // D4: auipc x10, 1        (x10 = PC + (1 << 12) = 0xD4 + 0x1000 = 0x10D4 = 4308)
 
+// Phase 21: JALR
+0e400d93 // D8: addi x27, x0, 0xE4  (x27 = 0xE4 = 228, setup target address)
+000d8567 // DC: jalr x10, 0(x27)     (Jump to x27+0=0xE4, x10 = PC+4 = 0xE0 = 224)
+06300593 // E0: addi x11, x0, 99    (BAD: flushed)
+02a00593 // E4: addi x11, x0, 42    (x11 = 42, confirms JALR landed here)
+
 // End Program (Infinite Loop)
-00000063 // D8: beq  x0, x0, 0      (Jump to self)
+00000063 // E8: beq  x0, x0, 0      (Jump to self)
