@@ -90,7 +90,7 @@ module Processor_tb;
         // Phase 6: JAL & LUI
         $display("Phase 6: JAL & LUI");
         check_register(5'd13, 32'd80); // jal  x13, 12 -> saves PC+4 = 0x50 = 80
-        check_register(5'd14, 32'd0); // Flushed (should stay 0)
+        // x14 overwritten by Phase 23 (SH test)
         check_register(5'd15, 32'd16384); // lui  x15, 4  -> 4 << 12 = 16384
 
         // Phase 7: SLT then SLTU (x16, x17 overwritten by Phase 15)
@@ -143,7 +143,15 @@ module Processor_tb;
         $display("Phase 21: JALR");
         check_register(5'd27, 32'd228); // addi x27, x0, 0xE4 -> x27 = 228
         check_register(5'd10, 32'd224); // jalr x10, 0(x27) -> x10 = PC+4 = 0xE0 = 224
-        check_register(5'd11, 32'd42);  // addi x11, x0, 42 -> confirms JALR landed at 0xE4
+        // x11 overwritten by Phase 22 (SB test)
+
+        // Phase 22: SB (Store Byte)
+        $display("Phase 22: SB (Store Byte)");
+        check_register(5'd11, 32'h00000A05); // lw x11, 8(x0) -> sb x1=5 to byte 0, sb x2=10 to byte 1
+
+        // Phase 23: SH (Store Halfword)
+        $display("Phase 23: SH (Store Halfword)");
+        check_register(5'd14, 32'h000A000F); // lw x14, 12(x0) -> sh x3=15 to bytes 0-1, sh x2=10 to bytes 2-3
 
         $display("============================================================");
         $display("RESULTS: %0d PASSED, %0d FAILED out of %0d total", 

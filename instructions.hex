@@ -100,5 +100,17 @@ fff0b893 // A0: sltiu x17, x1, -1   (unsigned: 5 < 0xFFFFFFFF = 1, x17 = 1)
 06300593 // E0: addi x11, x0, 99    (BAD: flushed)
 02a00593 // E4: addi x11, x0, 42    (x11 = 42, confirms JALR landed here)
 
+// Phase 22: SB (Store Byte)
+00002423 // E8: sw   x0, 8(x0)     (Zero out addr 8 first so unwritten bytes aren't X)
+00100423 // EC: sb   x1, 8(x0)     (Store byte x1=5 to addr 8, byte 0 → mem[2] = 0x00000005)
+002004A3 // F0: sb   x2, 9(x0)     (Store byte x2=10 to addr 9, byte 1 → mem[2] = 0x00000A05)
+00802583 // F4: lw   x11, 8(x0)    (Load word from addr 8 → x11 = 0x00000A05 = 2565)
+
+// Phase 23: SH (Store Halfword)
+00002623 // F8: sw   x0, 12(x0)    (Zero out addr 12 first)
+00301623 // FC: sh   x3, 12(x0)    (Store half x3=15 to addr 12, bytes 0-1 → mem[3] = 0x0000000F)
+00201723 // 100: sh  x2, 14(x0)    (Store half x2=10 to addr 14, bytes 2-3 → mem[3] = 0x000A000F)
+00C02703 // 104: lw  x14, 12(x0)   (Load word from addr 12 → x14 = 0x000A000F = 655375)
+
 // End Program (Infinite Loop)
-00000063 // E8: beq  x0, x0, 0      (Jump to self)
+00000063 // 108: beq  x0, x0, 0    (Jump to self)

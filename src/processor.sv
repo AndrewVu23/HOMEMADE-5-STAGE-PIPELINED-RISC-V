@@ -69,9 +69,12 @@ logic [N-1:0] e_write_data;
 // Memory
 logic [N-1:0] m_ALU_Result;
 logic [N-1:0] m_write_data;
+logic [N-1:0] m_write_data_shifted;
 logic [N-1:0] m_PC_plus_4;
 logic [N-1:0] m_read_address;
 logic [W-1:0] m_rd;
+logic [2:0] m_funct3;
+logic [3:0] byte_en;
 logic [1:0] m_ResultSrc;
 logic m_RegWrite;
 logic m_MemWrite;
@@ -218,11 +221,20 @@ J_and_B J_and_B_module(
     .e_Branch(e_Branch)
 );
 
+Store_Decoder Store_Decoder_module(
+    .e_funct3(m_funct3),
+    .address_offset(m_ALU_Result[1:0]),
+    .m_write_data(m_write_data),
+    .byte_en(byte_en),
+    .m_write_data_shifted(m_write_data_shifted)
+);
+
 Data_Mem Data_Mem_module(
     .clk(clk),
     .m_MemWrite(m_MemWrite),
+    .byte_en(byte_en),
     .address(m_ALU_Result),
-    .m_write_data(m_write_data),
+    .m_write_data_shifted(m_write_data_shifted),
     .m_read_address(m_read_address)
 );
 
@@ -295,7 +307,9 @@ Reg_EX_MEM Reg_EX_MEM_module(
     .m_rd(m_rd),
     .m_ResultSrc(m_ResultSrc),
     .m_RegWrite(m_RegWrite),
-    .m_MemWrite(m_MemWrite)
+    .m_MemWrite(m_MemWrite),
+    .e_funct3(e_funct3),
+    .m_funct3(m_funct3)
 );
 
 Reg_MEM_WB Reg_MEM_WB_module(
