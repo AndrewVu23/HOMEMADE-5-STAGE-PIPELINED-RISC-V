@@ -8,6 +8,8 @@ module PC_Target #(parameter N = 32)
     output logic [N-1:0] e_PC_Target
 );
     logic [N-1:0] target;
+
+    // Target to jump to
     assign target = e_PC_or_rs1 + e_ImmExt;
 
     // According to RISC-V specs, JALR need to clear the LSB of the target to 

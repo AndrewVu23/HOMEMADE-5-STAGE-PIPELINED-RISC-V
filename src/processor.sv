@@ -72,6 +72,7 @@ logic [N-1:0] m_write_data;
 logic [N-1:0] m_write_data_shifted;
 logic [N-1:0] m_PC_plus_4;
 logic [N-1:0] m_read_address;
+logic [N-1:0] m_read_data;
 logic [W-1:0] m_rd;
 logic [2:0] m_funct3;
 logic [3:0] byte_en;
@@ -81,7 +82,7 @@ logic m_MemWrite;
 
 // Writeback
 logic [N-1:0] w_ALU_Result;
-logic [N-1:0] w_read_address;
+logic [N-1:0] w_read_data;
 logic [N-1:0] w_PC_plus_4;
 logic [N-1:0] w_Result;
 logic [W-1:0] w_rd;
@@ -198,7 +199,7 @@ MuxB MuxB_module(
 
 MuxWB MuxWB_module(
     .w_ALU_Result(w_ALU_Result),
-    .w_read_address(w_read_address),
+    .w_read_data(w_read_data),
     .w_PC_plus_4(w_PC_plus_4),
     .w_Result(w_Result),
     .w_ResultSrc(w_ResultSrc)
@@ -236,6 +237,13 @@ Data_Mem Data_Mem_module(
     .address(m_ALU_Result),
     .m_write_data_shifted(m_write_data_shifted),
     .m_read_address(m_read_address)
+);
+
+Load_Decoder Load_Decoder_module(
+    .m_funct3(m_funct3),
+    .address_offset(m_ALU_Result[1:0]),
+    .m_read_address(m_read_address),
+    .m_read_data(m_read_data)
 );
 
 Reg_IF_ID Reg_IF_ID_module(
@@ -316,13 +324,13 @@ Reg_MEM_WB Reg_MEM_WB_module(
     .clk(clk),
     .rst(rst),
     .m_ALU_Result(m_ALU_Result),
-    .m_read_address(m_read_address),
+    .m_read_data(m_read_data),
     .m_PC_plus_4(m_PC_plus_4),
     .m_rd(m_rd),
     .m_ResultSrc(m_ResultSrc),
     .m_RegWrite(m_RegWrite),
     .w_ALU_Result(w_ALU_Result),
-    .w_read_address(w_read_address),
+    .w_read_data(w_read_data),
     .w_PC_plus_4(w_PC_plus_4),
     .w_rd(w_rd),
     .w_ResultSrc(w_ResultSrc),

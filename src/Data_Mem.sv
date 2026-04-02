@@ -18,7 +18,10 @@ module Data_Mem #(parameter N = 32)
     if (m_MemWrite) begin
       for (int i = 0; i < 4; i++) begin
         if (byte_en[i]) begin
-          RAM[address[11:2]][(i*8)+:8] <= m_write_data_shifted[(i*8)+:8];
+
+          // Support for sw, sh, and sb
+          // Select only a part of (or a whole) word to overwrite the data
+          RAM[address[11:2]][(i*8)+:8] <= m_write_data_shifted[(i*8)+:8]; 
         end
       end
     end

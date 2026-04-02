@@ -34,6 +34,7 @@ always_comb begin
                 default: begin byte_en = 4'b0000; m_write_data_shifted = m_write_data; end
             endcase
         end
+        
         default: begin
             byte_en = 4'b0000;
             m_write_data_shifted = m_write_data;

@@ -21,14 +21,17 @@ always @(*) begin
         if (op5_funct7_5 == 2'b11) d_ALUCon = 5'b00001; // SUB
         else d_ALUCon = 5'b00000; // ADD / ADDI
       end
+
       else if (funct3 == 3'b001) d_ALUCon = 5'b00111; // SLL / SLLI
       else if (funct3 == 3'b010) d_ALUCon = 5'b00101; // SLT / SLTI
       else if (funct3 == 3'b011) d_ALUCon = 5'b01010; // SLTU / SLTIU
       else if (funct3 == 3'b100) d_ALUCon = 5'b00100; // XOR / XORI
+      
       else if (funct3 == 3'b101) begin
         if (funct7_5) d_ALUCon = 5'b01001; // SRA / SRAI
         else d_ALUCon = 5'b01000; // SRL / SRLI
       end
+
       else if (funct3 == 3'b110) d_ALUCon = 5'b00011; // OR / ORI
       else if (funct3 == 3'b111) d_ALUCon = 5'b00010; // AND / ANDI
       else d_ALUCon = 5'b00000;

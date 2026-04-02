@@ -112,5 +112,22 @@ fff0b893 // A0: sltiu x17, x1, -1   (unsigned: 5 < 0xFFFFFFFF = 1, x17 = 1)
 00201723 // 100: sh  x2, 14(x0)    (Store half x2=10 to addr 14, bytes 2-3 → mem[3] = 0x000A000F)
 00C02703 // 104: lw  x14, 12(x0)   (Load word from addr 12 → x14 = 0x000A000F = 655375)
 
+// Phase 24: Setup for LB/LH sign-extension tests
+00002823 // 108: sw   x0, 16(x0)    (Zero out addr 16)
+00002A23 // 10C: sw   x0, 20(x0)    (Zero out addr 20)
+F8000493 // 110: addi x9, x0, -128  (x9 = 0xFFFFFF80)
+00900823 // 114: sb   x9, 16(x0)    (Store 0x80 at addr 16 byte 0 → mem[4] = 0x00000080)
+FFF00493 // 118: addi x9, x0, -1    (x9 = 0xFFFFFFFF)
+00901A23 // 11C: sh   x9, 20(x0)    (Store 0xFFFF at addr 20 bytes 0-1 → mem[5] = 0x0000FFFF)
+
+// Phase 25: LB & LBU
+01000583 // 120: lb   x11, 16(x0)   (Load byte 0x80, sign-extend → x11 = 0xFFFFFF80 = -128)
+01004683 // 124: lbu  x13, 16(x0)   (Load byte 0x80, zero-extend → x13 = 0x00000080 = 128)
+
+// Phase 26: LH & LHU
+00000493 // 128: addi x9, x0, 0     (Clear x9 so we can verify lh actually loads)
+01401483 // 12C: lh   x9, 20(x0)    (Load half 0xFFFF, sign-extend → x9 = 0xFFFFFFFF = -1)
+01405703 // 130: lhu  x14, 20(x0)   (Load half 0xFFFF, zero-extend → x14 = 0x0000FFFF = 65535)
+
 // End Program (Infinite Loop)
-00000063 // 108: beq  x0, x0, 0    (Jump to self)
+00000063 // 134: beq  x0, x0, 0     (Jump to self)
