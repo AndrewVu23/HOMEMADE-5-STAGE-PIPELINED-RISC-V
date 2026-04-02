@@ -42,13 +42,13 @@ always_comb begin
     // Forwarding for ALU input A (rs1) 
     // We evaluate the register at MEM stage first since it is more recent (1 previous cycle)
     // compared to the register at WB stage (2 previous cycles)
-    if (((e_rs1 == m_rd) & m_RegWrite) & (e_rs1 != 0)) forwardA = 2'b10;
-    else if (((e_rs1 == w_rd) & w_RegWrite) & (e_rs1 != 0)) forwardA = 2'b01;
-    else forwardA = 2'b00;
+    if (((e_rs1 == m_rd) & m_RegWrite) & (e_rs1 != 0)) forwardA = 2'b10; // ALU Result after passing to MEM stage
+    else if (((e_rs1 == w_rd) & w_RegWrite) & (e_rs1 != 0)) forwardA = 2'b01; // Result from WB stage
+    else forwardA = 2'b00; // Data from rs1
 
     // Forwarding for ALU input B (rs2)
-    if (((e_rs2 == m_rd) & m_RegWrite) & (e_rs2 != 0)) forwardB = 2'b10;
-    else if (((e_rs2 == w_rd) & w_RegWrite) & (e_rs2 != 0)) forwardB = 2'b01;
-    else forwardB = 2'b00;
+    if (((e_rs2 == m_rd) & m_RegWrite) & (e_rs2 != 0)) forwardB = 2'b10; // ALU Result after passing to MEM stage
+    else if (((e_rs2 == w_rd) & w_RegWrite) & (e_rs2 != 0)) forwardB = 2'b01; // Result from WB stage
+    else forwardB = 2'b00; // Data from rs2
 end
 endmodule
