@@ -9,10 +9,11 @@ module Data_Mem #(parameter N = 32)
   input logic [N-1:0] m_write_data_shifted,
   output logic [N-1:0] m_read_address
 );
-  logic [N-1:0] RAM [1023:0];
+  // Expand the memory size to accommodate compliance suite testing (RISCOF in this case)
+  logic [N-1:0] RAM [0:524287];
 
   // Same trick here (Instr_Mem)
-  assign m_read_address = RAM[address[11:2]];
+  assign m_read_address = RAM[address[20:2]];
 
   always @(posedge clk) begin
     if (m_MemWrite) begin
@@ -21,7 +22,7 @@ module Data_Mem #(parameter N = 32)
 
           // Support for sw, sh, and sb
           // Select only a part of (or a whole) word to overwrite the data
-          RAM[address[11:2]][(i*8)+:8] <= m_write_data_shifted[(i*8)+:8]; 
+          RAM[address[20:2]][(i*8)+:8] <= m_write_data_shifted[(i*8)+:8]; 
         end
       end
     end

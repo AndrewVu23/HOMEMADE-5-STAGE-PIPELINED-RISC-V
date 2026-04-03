@@ -9,7 +9,7 @@ module PC_counter #(parameter N = 32)
   output logic [N-1:0] f_PC
 );
 always_ff @(posedge clk) begin
-    if (rst) f_PC = 0;
+    if (rst) f_PC <= 0;
     else if (!f_stall) f_PC <= f_PC_next;
 end
 endmodule
