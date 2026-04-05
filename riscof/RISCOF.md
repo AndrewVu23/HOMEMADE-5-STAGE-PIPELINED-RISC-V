@@ -41,17 +41,11 @@ are 38 tests, one per instruction (add, sub, beq, jal, etc.) plus fence.
 
 ## 2. How RISCOF Works
 
-<p align="center">
-  <img src="image-1.png" alt="RISCOF Full Overview" width="800">
-</p>
-
+<p align="center"> <img width="800" height="474" alt="image" src="https://github.com/user-attachments/assets/8f9be28d-c9d5-4425-a225-4096195a97d7" > </p>
 
 While the process looks complicated (cause it is), we are going to focus only on the execution:
 
-
-<p align="center">
-  <img src="image.png" alt="RISCOF Execution Flow" width="450">
-</p>
+<p align="center"> <img width="400" height="1500" alt="image" src="https://github.com/user-attachments/assets/6cd21fb5-e31c-4f73-8604-4122791b8cd7" > </p>
 
 RISCOF is essentially a test orchestrator. It:
 
