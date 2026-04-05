@@ -1,5 +1,16 @@
 # HOMEMADE 5-STAGE-PIPELINE RISC-V
-![RV32-1](https://github.com/user-attachments/assets/334058cc-4280-4ac5-83b5-097ff429da1a)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/334058cc-4280-4ac5-83b5-097ff429da1a" alt="RV32-1" width="900">
+  <br>
+  <em>5-Stage Pipelined RV32I Datapath (outdated: this was when I only supported 14 instructions)</em>
+</p>
+
+<p align="center">
+  <img width="900" alt="image" src="https://github.com/user-attachments/assets/980ce243-aa93-44c1-9561-1b24999a63e3" />
+  <br>
+  <em>RISCOF Testing Report</em>
+</p>
 
 ## Quick Start
 
