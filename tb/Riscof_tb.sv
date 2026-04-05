@@ -19,7 +19,9 @@ module Riscof_tb;
     integer end_signature;
     integer tohost_addr;
 
-    // Timeout: max cycles before we give up
+    // Timeout: max cycles before we give up.
+    // The largest test (jal-01) has ~441K instructions plus pipeline
+    // overhead. 500K cycles gives enough headroom.
     localparam MAX_CYCLES = 500000;
     integer cycle_count;
 
