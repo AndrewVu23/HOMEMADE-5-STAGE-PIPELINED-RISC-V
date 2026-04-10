@@ -1,0 +1,50 @@
+# ASIC synthesis: Full Processor with 64-word memories (initialized from hex)
+# Using sky130_fd_sc_hd (High Density) standard cell library
+
+DESIGN_NAME: Processor
+
+VERILOG_FILES:
+  # ASIC versions (64-word memories + probe output)
+  - dir::src/Processor.sv
+  - dir::src/Instr_Mem.sv
+  - dir::src/Data_Mem.sv
+  # All other modules from src/
+  - dir::../src/ALU.sv
+  - dir::../src/ALU_Decoder.sv
+  - dir::../src/Control_Unit.sv
+  - dir::../src/Hazard_Unit.sv
+  - dir::../src/J_and_B.sv
+  - dir::../src/Load_Decoder.sv
+  - dir::../src/Store_Decoder.sv
+  - dir::../src/MuxA.sv
+  - dir::../src/MuxB.sv
+  - dir::../src/MuxWB.sv
+  - dir::../src/Mux_JALRSrc.sv
+  - dir::../src/Mux_PCTarget_to_PC.sv
+  - dir::../src/Mux_Reg_to_B.sv
+  - dir::../src/PC_counter.sv
+  - dir::../src/PC_plus_4_counter.sv
+  - dir::../src/PC_Target.sv
+  - dir::../src/Reg_EX_MEM.sv
+  - dir::../src/Reg_File.sv
+  - dir::../src/Reg_ID_EX.sv
+  - dir::../src/Reg_IF_ID.sv
+  - dir::../src/Reg_MEM_WB.sv
+  - dir::../src/Sign_Ext.sv
+
+CLOCK_PORT: clk
+CLOCK_PERIOD: 17.0
+
+FP_CORE_UTIL: 45
+SYNTH_STRATEGY: "DELAY 0"
+FP_PIN_ORDER_CFG: dir::pin_order.cfg
+
+# PDN config for larger die (memories add significant area)
+FP_PDN_VPITCH: 80
+FP_PDN_HPITCH: 80
+FP_PDN_VOFFSET: 5
+FP_PDN_HOFFSET: 5
+
+# Timing optimization - let the tools push harder
+PL_RESIZER_TIMING_OPTIMIZATIONS: true
+GLB_RESIZER_TIMING_OPTIMIZATIONS: true

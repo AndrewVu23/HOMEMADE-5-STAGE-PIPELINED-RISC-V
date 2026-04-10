@@ -1,0 +1,133 @@
+// Phase 1: Basic Math & EX-to-EX Forwarding
+00500093 // 00: addi x1, x0, 5      (x1 = 5)
+00a00113 // 04: addi x2, x0, 10     (x2 = 10)
+002081b3 // 08: add  x3, x1, x2     (x3 = 15)
+40118233 // 0C: sub  x4, x3, x1     (x4 = 10 -> triggers EX-EX forwarding)
+
+// Phase 2: MEM-to-EX Forwarding
+002082b3 // 10: add  x5, x1, x2     (x5 = 15)
+00000013 // 14: addi x0, x0, 0      (NOP to push the add into MEM)
+40228333 // 18: sub  x6, x5, x2     (x6 = 5 -> triggers MEM-EX forwarding)
+
+// Phase 3: The Load-Use Stall
+00602023 // 1C: sw   x6, 0(x0)      (Store 5 to address 0)
+00002383 // 20: lw   x7, 0(x0)      (Load 5 back into x7)
+00138433 // 24: add  x8, x7, x1     (x8 = 10 -> triggers Load-Use Stall)
+
+// Phase 4: BEQ Taken & Flushing
+00240663 // 28: beq  x8, x2, 12     (10==10 -> TAKEN, jump +12)
+06300493 // 2C: addi x9, x0, 99     (BAD: flushed)
+06300493 // 30: addi x9, x0, 99     (BAD: flushed)
+
+// Phase 5: BNE Taken & Not Taken
+00209663 // 34: bne  x1, x2, 12     (5!=10 -> TAKEN, jump +12)
+04d00493 // 38: addi x9, x0, 77     (BAD: flushed)
+04d00493 // 3C: addi x9, x0, 77     (BAD: flushed)
+00109463 // 40: bne  x1, x1, 8      (5!=5 -> NOT taken, fall through)
+0020f5b3 // 44: and  x11, x1, x2    (x11 = 5 & 10 = 0)
+0020e633 // 48: or   x12, x1, x2    (x12 = 5 | 10 = 15)
+
+// Phase 6: Jump and Link (jal) & U-Type
+00c006ef // 4C: jal  x13, 12        (Jump forward 12 bytes. Save PC+4 (0x44) to x13)
+06300713 // 50: addi x14, x0, 99    (BAD: In Decode. Must be flushed)
+06300713 // 54: addi x14, x0, 99    (BAD: In Fetch. Must be flushed)
+
+// Target of JAL
+000047b7 // 58: lui  x15, 4         (x15 = 4 << 12 = 16384. Execution lands here)
+
+// Phase 7: SLT (Set Less Than)
+00132833 // 5C: slt  x16, x6, x1    (x6=5, x1=5 -> 5 < 5 = 0, x16 = 0)
+001028b3 // 60: slt  x17, x0, x1    (x0=0, x1=5 -> 0 < 5 = 1, x17 = 1)
+
+// Phase 8: SLTI
+0030a913 // 64: slti x18, x1, 3     (x1=5, 5 < 3 = 0, x18 = 0)
+00a0a993 // 68: slti x19, x1, 10    (x1=5, 5 < 10 = 1, x19 = 1)
+
+// Phase 9: ORI
+00a0ea13 // 6C: ori  x20, x1, 0xA   (x1=5=0101, 0xA=1010, 0101|1010=1111=15, x20 = 15)
+
+// Phase 10: ANDI
+0030fa93 // 70: andi x21, x1, 0x3   (x1=5=0101, 0x3=0011, 0101&0011=0001=1, x21 = 1)
+
+// Phase 11: XOR & XORI
+0020cb33 // 74: xor  x22, x1, x2    (x1=5=0101, x2=10=1010, 0101^1010=1111=15, x22 = 15)
+00f0cb93 // 78: xori x23, x1, 0xF   (x1=5=0101, 0xF=1111, 0101^1111=1010=10, x23 = 10)
+
+// Phase 12: SLL & SLLI
+00209c33 // 7C: sll  x24, x1, x2    (x1=5, x2=10, 5 << 10 = 5120, x24 = 5120)
+00209c93 // 80: slli x25, x1, 2     (x1=5, shamt=2, 5 << 2 = 20, x25 = 20)
+
+// Phase 13: SRL & SRLI
+0f000d93 // 84: addi x27, x0, 240   (x27 = 240 = 0xF0, setup for shift tests)
+0011dd33 // 88: srl  x26, x3, x1    (x3=15, x1=5, 15 >> 5 = 0, x26 = 0)
+004dde13 // 8C: srli x28, x27, 4    (x27=240=0xF0, shamt=4, 240 >> 4 = 15, x28 = 15)
+
+// Phase 14: SRA & SRAI
+ff000e93 // 90: addi x29, x0, -16   (x29 = 0xFFFFFFF0 = -16, setup for arith shift)
+401edf33 // 94: sra  x30, x29, x1   (x29=-16, x1=5, -16 >>> 5 = -1 = 0xFFFFFFFF, x30 = -1)
+402edf93 // 98: srai x31, x29, 2    (x29=-16, shamt=2, -16 >>> 2 = -4 = 0xFFFFFFFC, x31 = -4)
+
+// Phase 15: SLTU & SLTIU (overwrites x16, x17)
+01d0b833 // 9C: sltu  x16, x1, x29  (unsigned: 5 < 0xFFFFFFF0 = 1, x16 = 1)
+fff0b893 // A0: sltiu x17, x1, -1   (unsigned: 5 < 0xFFFFFFFF = 1, x17 = 1)
+
+// Phase 16: BLT Taken (x29=-16, x1=5, signed: -16 < 5 = TRUE)
+001ec663 // A4: blt  x29, x1, 12    (TAKEN, jump +12)
+01000513 // A8: addi x10, x0, 16    (BAD: flushed)
+01000513 // AC: addi x10, x0, 16    (BAD: flushed)
+
+// Phase 17: BGE Taken (x1=5, x29=-16, signed: 5 >= -16 = TRUE)
+01d0d663 // B0: bge  x1, x29, 12    (TAKEN, jump +12)
+01100513 // B4: addi x10, x0, 17    (BAD: flushed)
+01100513 // B8: addi x10, x0, 17    (BAD: flushed)
+
+// Phase 18: BLTU Taken (x1=5, x29=0xFFFFFFF0, unsigned: 5 < 0xFFFFFFF0 = TRUE)
+01d0e663 // BC: bltu x1, x29, 12    (TAKEN, jump +12)
+01200513 // C0: addi x10, x0, 18    (BAD: flushed)
+01200513 // C4: addi x10, x0, 18    (BAD: flushed)
+
+// Phase 19: BGEU Taken (x29=0xFFFFFFF0, x1=5, unsigned: 0xFFFFFFF0 >= 5 = TRUE)
+001ef663 // C8: bgeu x29, x1, 12    (TAKEN, jump +12)
+01300513 // CC: addi x10, x0, 19    (BAD: flushed)
+01300513 // D0: addi x10, x0, 19    (BAD: flushed)
+
+// Phase 20: AUIPC
+00001517 // D4: auipc x10, 1        (x10 = PC + (1 << 12) = 0xD4 + 0x1000 = 0x10D4 = 4308)
+
+// Phase 21: JALR
+0e400d93 // D8: addi x27, x0, 0xE4  (x27 = 0xE4 = 228, setup target address)
+000d8567 // DC: jalr x10, 0(x27)     (Jump to x27+0=0xE4, x10 = PC+4 = 0xE0 = 224)
+06300593 // E0: addi x11, x0, 99    (BAD: flushed)
+02a00593 // E4: addi x11, x0, 42    (x11 = 42, confirms JALR landed here)
+
+// Phase 22: SB (Store Byte)
+00002423 // E8: sw   x0, 8(x0)     (Zero out addr 8 first so unwritten bytes aren't X)
+00100423 // EC: sb   x1, 8(x0)     (Store byte x1=5 to addr 8, byte 0 → mem[2] = 0x00000005)
+002004A3 // F0: sb   x2, 9(x0)     (Store byte x2=10 to addr 9, byte 1 → mem[2] = 0x00000A05)
+00802583 // F4: lw   x11, 8(x0)    (Load word from addr 8 → x11 = 0x00000A05 = 2565)
+
+// Phase 23: SH (Store Halfword)
+00002623 // F8: sw   x0, 12(x0)    (Zero out addr 12 first)
+00301623 // FC: sh   x3, 12(x0)    (Store half x3=15 to addr 12, bytes 0-1 → mem[3] = 0x0000000F)
+00201723 // 100: sh  x2, 14(x0)    (Store half x2=10 to addr 14, bytes 2-3 → mem[3] = 0x000A000F)
+00C02703 // 104: lw  x14, 12(x0)   (Load word from addr 12 → x14 = 0x000A000F = 655375)
+
+// Phase 24: Setup for LB/LH sign-extension tests
+00002823 // 108: sw   x0, 16(x0)    (Zero out addr 16)
+00002A23 // 10C: sw   x0, 20(x0)    (Zero out addr 20)
+F8000493 // 110: addi x9, x0, -128  (x9 = 0xFFFFFF80)
+00900823 // 114: sb   x9, 16(x0)    (Store 0x80 at addr 16 byte 0 → mem[4] = 0x00000080)
+FFF00493 // 118: addi x9, x0, -1    (x9 = 0xFFFFFFFF)
+00901A23 // 11C: sh   x9, 20(x0)    (Store 0xFFFF at addr 20 bytes 0-1 → mem[5] = 0x0000FFFF)
+
+// Phase 25: LB & LBU
+01000583 // 120: lb   x11, 16(x0)   (Load byte 0x80, sign-extend → x11 = 0xFFFFFF80 = -128)
+01004683 // 124: lbu  x13, 16(x0)   (Load byte 0x80, zero-extend → x13 = 0x00000080 = 128)
+
+// Phase 26: LH & LHU
+00000493 // 128: addi x9, x0, 0     (Clear x9 so we can verify lh actually loads)
+01401483 // 12C: lh   x9, 20(x0)    (Load half 0xFFFF, sign-extend → x9 = 0xFFFFFFFF = -1)
+01405703 // 130: lhu  x14, 20(x0)   (Load half 0xFFFF, zero-extend → x14 = 0x0000FFFF = 65535)
+
+// End Program (Infinite Loop)
+00000063 // 134: beq  x0, x0, 0     (Jump to self)
