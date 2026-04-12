@@ -12,6 +12,12 @@
   <em>RISCOF Testing Report</em>
 </p>
 
+<p align="center">
+  <img width="730" height="749" alt="image" src="https://github.com/user-attachments/assets/d22ba8d0-5ca2-4c73-824c-8bf1c8aa378c" />
+  <br>
+  <em>Synthesized Using High Speed Standard Cells (95.2MHz)</em>
+</p>
+
 ## Quick Start
 
 ```bash
