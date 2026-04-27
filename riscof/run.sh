@@ -48,7 +48,7 @@ fi
 
 # Run the full RV32I compliance suite
 echo "Running RISCOF compliance tests..."
-echo "T222his may take a few minutes."
+echo "This may take a few minutes."
 echo ""
 
 riscof run \
