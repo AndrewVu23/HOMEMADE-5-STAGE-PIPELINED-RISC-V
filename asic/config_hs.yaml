@@ -5,6 +5,8 @@
 DESIGN_NAME: Processor
 
 VERILOG_FILES:
+  # Shared signal-type package (must be elaborated before the modules that import it)
+  - dir::../pkg/signals_pkg.sv
   # ASIC versions (64-word memories + probe output)
   - dir::src/Processor.sv
   - dir::src/Instr_Mem.sv

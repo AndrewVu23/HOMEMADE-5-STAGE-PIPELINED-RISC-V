@@ -1,54 +1,56 @@
 `timescale 1ns/1ps
 
-module Control_Unit(
-  input logic [6:0] opcode,
-  output logic d_RegWrite,
-  output logic d_ALUSrc,
-  output logic d_MemWrite,
-  output logic d_Branch,
-  output logic d_Jump,
-  output logic d_JALRSrc,
-  output logic [2:0] d_ImmSrc,
-  output logic [1:0] ALUOp,
-  output logic [1:0] d_ResultSrc
+// Main decoder: maps an instruction opcode to the pipeline control signals.
+module Control_Unit import signals_pkg::*;
+(
+  input  opcode_t    opcode,
+  output logic       d_RegWrite,
+  output logic       d_ALUSrc,
+  output logic       d_MemWrite,
+  output logic       d_Branch,
+  output logic       d_Jump,
+  output logic       d_JALRSrc,
+  output immsrc_t    d_ImmSrc,
+  output aluop_t     ALUOp,
+  output resultsrc_t d_ResultSrc
 );
-  always @(*) begin
-    case(opcode)
-      7'b0000011: begin // Load
-        d_RegWrite = 1; d_ALUSrc = 1; d_MemWrite = 0; d_ResultSrc = 2'b01; d_Branch = 0; d_Jump = 0; d_JALRSrc = 0;
-        d_ImmSrc = 3'b000; ALUOp = 2'b00;
+  always_comb begin
+    case (opcode)
+      OPCODE_LOAD: begin // lw, lb, lh, lbu, lhu
+        d_RegWrite = 1; d_ALUSrc = 1; d_MemWrite = 0; d_ResultSrc = RESULT_MEM;
+        d_Branch = 0; d_Jump = 0; d_JALRSrc = 0; d_ImmSrc = IMM_I_TYPE; ALUOp = ALUOP_LOAD_STORE;
       end
-      7'b0100011: begin // Store
-        d_RegWrite = 0; d_ALUSrc = 1; d_MemWrite = 1; d_ResultSrc = 2'b00; d_Branch = 0; d_Jump = 0; d_JALRSrc = 0;
-        d_ImmSrc = 3'b001; ALUOp = 2'b00;
+      OPCODE_STORE: begin // sw, sb, sh
+        d_RegWrite = 0; d_ALUSrc = 1; d_MemWrite = 1; d_ResultSrc = RESULT_ALU;
+        d_Branch = 0; d_Jump = 0; d_JALRSrc = 0; d_ImmSrc = IMM_S_TYPE; ALUOp = ALUOP_LOAD_STORE;
       end
-      7'b0110011: begin // R-type
-        d_RegWrite = 1; d_ALUSrc = 0; d_MemWrite = 0; d_ResultSrc = 2'b00; d_Branch = 0; d_Jump = 0; d_JALRSrc = 0;
-        d_ImmSrc = 3'bxxx; ALUOp = 2'b10;
+      OPCODE_R_TYPE: begin // add, sub, and, or, ...
+        d_RegWrite = 1; d_ALUSrc = 0; d_MemWrite = 0; d_ResultSrc = RESULT_ALU;
+        d_Branch = 0; d_Jump = 0; d_JALRSrc = 0; d_ImmSrc = IMM_I_TYPE /* unused */; ALUOp = ALUOP_R_I_TYPE;
       end
-      7'b1100011: begin // Branch
-        d_RegWrite = 0; d_ALUSrc = 0; d_MemWrite = 0; d_ResultSrc = 2'b00; d_Branch = 1; d_Jump = 0; d_JALRSrc = 0;
-        d_ImmSrc = 3'b010; ALUOp = 2'b01;
+      OPCODE_B_TYPE: begin // beq, bne, blt, ...
+        d_RegWrite = 0; d_ALUSrc = 0; d_MemWrite = 0; d_ResultSrc = RESULT_ALU;
+        d_Branch = 1; d_Jump = 0; d_JALRSrc = 0; d_ImmSrc = IMM_B_TYPE; ALUOp = ALUOP_BRANCH;
       end
-      7'b0010011: begin // I-type
-        d_RegWrite = 1; d_ALUSrc = 1; d_MemWrite = 0; d_ResultSrc = 2'b00; d_Branch = 0; d_Jump = 0; d_JALRSrc = 0;
-        d_ImmSrc = 3'b000; ALUOp = 2'b10;
+      OPCODE_I_TYPE: begin // addi, andi, slli, ...
+        d_RegWrite = 1; d_ALUSrc = 1; d_MemWrite = 0; d_ResultSrc = RESULT_ALU;
+        d_Branch = 0; d_Jump = 0; d_JALRSrc = 0; d_ImmSrc = IMM_I_TYPE; ALUOp = ALUOP_R_I_TYPE;
       end
-      7'b1100111: begin // JALR
-        d_RegWrite = 1; d_ALUSrc = 1'bx; d_MemWrite = 0; d_ResultSrc = 2'b10; d_Branch = 0; d_Jump = 1; d_JALRSrc = 1;
-        d_ImmSrc = 3'b000; ALUOp = 2'bxx;
+      OPCODE_JALR: begin // jalr — target = rs1 + imm, writeback = PC+4
+        d_RegWrite = 1; d_ALUSrc = 1; d_MemWrite = 0; d_ResultSrc = RESULT_PC_PLUS4;
+        d_Branch = 0; d_Jump = 1; d_JALRSrc = 1; d_ImmSrc = IMM_I_TYPE; ALUOp = ALUOP_LOAD_STORE /* unused */;
       end
-      7'b1101111: begin // JAL
-        d_RegWrite = 1; d_ALUSrc = 1'bx; d_MemWrite = 0; d_ResultSrc = 2'b10; d_Branch = 0; d_Jump = 1; d_JALRSrc = 0;
-        d_ImmSrc = 3'b011; ALUOp = 2'bxx;
+      OPCODE_JAL: begin // jal — target = PC + imm, writeback = PC+4
+        d_RegWrite = 1; d_ALUSrc = 1; d_MemWrite = 0; d_ResultSrc = RESULT_PC_PLUS4;
+        d_Branch = 0; d_Jump = 1; d_JALRSrc = 0; d_ImmSrc = IMM_J_TYPE; ALUOp = ALUOP_LOAD_STORE /* unused */;
       end
-      7'b0110111, 7'b0010111: begin // U-type
-        d_RegWrite = 1; d_ALUSrc = 1; d_MemWrite = 0; d_ResultSrc = 2'b00; d_Branch = 0; d_Jump = 0; d_JALRSrc = 0;
-        d_ImmSrc = 3'b100; ALUOp = 2'b11;
+      OPCODE_LUI, OPCODE_AUIPC: begin // U-type
+        d_RegWrite = 1; d_ALUSrc = 1; d_MemWrite = 0; d_ResultSrc = RESULT_ALU;
+        d_Branch = 0; d_Jump = 0; d_JALRSrc = 0; d_ImmSrc = IMM_U_TYPE; ALUOp = ALUOP_U_TYPE;
       end
-      default: begin
-        d_RegWrite = 0; d_ALUSrc = 0; d_MemWrite = 0; d_ResultSrc = 0; d_Branch = 0; d_Jump = 0; d_JALRSrc = 0;
-        d_ImmSrc = 3'b000; ALUOp = 2'b00;
+      default: begin // fence and anything else: no side effects
+        d_RegWrite = 0; d_ALUSrc = 0; d_MemWrite = 0; d_ResultSrc = RESULT_ALU;
+        d_Branch = 0; d_Jump = 0; d_JALRSrc = 0; d_ImmSrc = IMM_I_TYPE; ALUOp = ALUOP_LOAD_STORE;
       end
     endcase
   end

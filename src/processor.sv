@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module Processor #(parameter N = 32, parameter W = 5)
+module Processor import signals_pkg::*; #(parameter N = 32, parameter W = 5)
 (
     input logic clk,
     input logic rst,
@@ -29,10 +29,10 @@ logic d_Jump;
 logic d_JALRSrc;
 logic d_stall;
 logic d_flush;
-logic [4:0] d_ALUCon;
-logic [1:0] ALUOp;
-logic [1:0] d_ResultSrc;
-logic [2:0] d_ImmSrc;
+alucon_t d_ALUCon;
+aluop_t ALUOp;
+resultsrc_t d_ResultSrc;
+immsrc_t d_ImmSrc;
 logic [W-1:0] d_rs1;
 logic [W-1:0] d_rs2;
 logic [W-1:0] d_rd;
@@ -53,12 +53,12 @@ logic e_Branch;
 logic e_Jump;
 logic e_JALRSrc;
 logic e_PCSrc;
-logic [1:0] e_ResultSrc;
-logic [4:0] e_ALUCon;
+resultsrc_t e_ResultSrc;
+alucon_t e_ALUCon;
 logic [2:0] e_funct3;
 logic e_flush;
-logic [1:0] forwardA;
-logic [1:0] forwardB;
+forward_t forwardA;
+forward_t forwardB;
 logic [N-1:0] e_ALU_Result;
 logic [N-1:0] A;
 logic [N-1:0] B;
@@ -76,7 +76,7 @@ logic [N-1:0] m_read_data;
 logic [W-1:0] m_rd;
 logic [2:0] m_funct3;
 logic [3:0] byte_en;
-logic [1:0] m_ResultSrc;
+resultsrc_t m_ResultSrc;
 logic m_RegWrite;
 logic m_MemWrite;
 
@@ -86,7 +86,7 @@ logic [N-1:0] w_read_data;
 logic [N-1:0] w_PC_plus_4;
 logic [N-1:0] w_Result;
 logic [W-1:0] w_rd;
-logic [1:0] w_ResultSrc;
+resultsrc_t w_ResultSrc;
 logic w_RegWrite;
 
 assign d_rs1 = d_instruction[19:15];

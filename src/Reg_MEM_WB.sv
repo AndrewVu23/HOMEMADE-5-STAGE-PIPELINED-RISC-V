@@ -1,38 +1,39 @@
 `timescale 1ns/1ps
 
-module Reg_MEM_WB #(parameter N = 32, parameter W = 5)
+// MEM/WB pipeline register.
+module Reg_MEM_WB import signals_pkg::*; #(parameter N = 32, parameter W = 5)
 (
-    input logic clk,
-    input logic rst,
-    input logic [N-1:0] m_read_data,
-    input logic [N-1:0] m_PC_plus_4,
-    input logic [N-1:0] m_ALU_Result,
-    input logic [W-1:0] m_rd,
-    input logic [1:0] m_ResultSrc,
-    input logic m_RegWrite,
+    input  logic         clk,
+    input  logic         rst,
+    input  logic [N-1:0] m_read_data,
+    input  logic [N-1:0] m_PC_plus_4,
+    input  logic [N-1:0] m_ALU_Result,
+    input  logic [W-1:0] m_rd,
+    input  resultsrc_t   m_ResultSrc,
+    input  logic         m_RegWrite,
     output logic [N-1:0] w_ALU_Result,
     output logic [N-1:0] w_read_data,
     output logic [N-1:0] w_PC_plus_4,
     output logic [W-1:0] w_rd,
-    output logic [1:0] w_ResultSrc,
-    output logic w_RegWrite
+    output resultsrc_t   w_ResultSrc,
+    output logic         w_RegWrite
 );
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            w_ALU_Result <= 0;
-            w_read_data <= 0;
-            w_PC_plus_4 <= 0;
-            w_rd <= 0;
-            w_ResultSrc <= 0;
-            w_RegWrite <= 0;
-        end
-        else begin
-            w_ALU_Result <= m_ALU_Result;
-            w_read_data <= m_read_data;
-            w_PC_plus_4 <= m_PC_plus_4;
-            w_rd <= m_rd;
-            w_ResultSrc <= m_ResultSrc;
-            w_RegWrite <= m_RegWrite;
-        end
+  always_ff @(posedge clk) begin
+    if (rst) begin
+      w_ALU_Result <= 0;
+      w_read_data  <= 0;
+      w_PC_plus_4  <= 0;
+      w_rd         <= 0;
+      w_ResultSrc  <= RESULT_ALU;
+      w_RegWrite   <= 0;
     end
+    else begin
+      w_ALU_Result <= m_ALU_Result;
+      w_read_data  <= m_read_data;
+      w_PC_plus_4  <= m_PC_plus_4;
+      w_rd         <= m_rd;
+      w_ResultSrc  <= m_ResultSrc;
+      w_RegWrite   <= m_RegWrite;
+    end
+  end
 endmodule

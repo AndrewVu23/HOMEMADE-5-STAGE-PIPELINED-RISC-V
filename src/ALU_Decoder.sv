@@ -1,42 +1,34 @@
 `timescale 1ns/1ps
 
-module ALU_Decoder(
-  input logic [2:0] funct3,
-  input logic [1:0] ALUOp,
-  input logic funct7_5,
-  input logic op5,
-  output logic [4:0] d_ALUCon
+// Secondary decoder: refines ALUOp (from the Control_Unit) plus funct3/funct7
+// into the concrete ALU operation.
+module ALU_Decoder import signals_pkg::*;
+(
+  input  logic [2:0] funct3,
+  input  aluop_t     ALUOp,
+  input  logic       funct7_5, // instruction[30]
+  input  logic       op5,      // instruction[5] — distinguishes R-type from I-type
+  output alucon_t    d_ALUCon
 );
-wire [1:0] op5_funct7_5;
-
-assign op5_funct7_5 = {op5, funct7_5};
-
-always @(*) begin
-  case(ALUOp)
-    2'b00: d_ALUCon = 5'b00000; // ADD (lw,sw)
-    2'b01: d_ALUCon = 5'b00001; // SUB (beq)
-    2'b11: d_ALUCon = op5 ? 5'b00110 : 5'b01011; // LUI : AUIPC
-    2'b10: begin // R-type / I-type ALU
-      if (funct3 == 3'b000) begin
-        if (op5_funct7_5 == 2'b11) d_ALUCon = 5'b00001; // SUB
-        else d_ALUCon = 5'b00000; // ADD / ADDI
+  always_comb begin
+    case (ALUOp)
+      ALUOP_LOAD_STORE: d_ALUCon = ALU_ADD;                        // address = base + imm
+      ALUOP_BRANCH:     d_ALUCon = ALU_SUB;                        // compare via subtract
+      ALUOP_U_TYPE:     d_ALUCon = alucon_t'(op5 ? ALU_LUI : ALU_AUIPC);      // lui passes imm, auipc adds PC
+      ALUOP_R_I_TYPE: begin
+        case (funct3)
+          F3_ADD_SUB: d_ALUCon = alucon_t'((op5 & funct7_5) ? ALU_SUB : ALU_ADD); // sub only for R-type add/sub with funct7[5]
+          F3_SLL:     d_ALUCon = ALU_SLL;
+          F3_SLT:     d_ALUCon = ALU_SLT;
+          F3_SLTU:    d_ALUCon = ALU_SLTU;
+          F3_XOR:     d_ALUCon = ALU_XOR;
+          F3_SRL_SRA: d_ALUCon = alucon_t'(funct7_5 ? ALU_SRA : ALU_SRL);     // srai/sra vs srli/srl
+          F3_OR:      d_ALUCon = ALU_OR;
+          F3_AND:     d_ALUCon = ALU_AND;
+          default:    d_ALUCon = ALU_ADD;
+        endcase
       end
-
-      else if (funct3 == 3'b001) d_ALUCon = 5'b00111; // SLL / SLLI
-      else if (funct3 == 3'b010) d_ALUCon = 5'b00101; // SLT / SLTI
-      else if (funct3 == 3'b011) d_ALUCon = 5'b01010; // SLTU / SLTIU
-      else if (funct3 == 3'b100) d_ALUCon = 5'b00100; // XOR / XORI
-      
-      else if (funct3 == 3'b101) begin
-        if (funct7_5) d_ALUCon = 5'b01001; // SRA / SRAI
-        else d_ALUCon = 5'b01000; // SRL / SRLI
-      end
-
-      else if (funct3 == 3'b110) d_ALUCon = 5'b00011; // OR / ORI
-      else if (funct3 == 3'b111) d_ALUCon = 5'b00010; // AND / ANDI
-      else d_ALUCon = 5'b00000;
-    end
-    default: d_ALUCon = 5'b00000;
-  endcase
-end
+      default: d_ALUCon = ALU_ADD;
+    endcase
+  end
 endmodule

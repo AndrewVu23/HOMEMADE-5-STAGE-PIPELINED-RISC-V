@@ -1,34 +1,34 @@
 `timescale 1ns/1ps
 
-module ALU #(parameter N = 32)
+module ALU import signals_pkg::*; #(parameter N = 32)
 (
-  input logic [N-1:0] A,
-  input logic [N-1:0] B,
-  input logic [N-1:0] e_PC,
-  input logic [4:0] e_ALUCon,
+  input  logic [N-1:0] A,
+  input  logic [N-1:0] B,
+  input  logic [N-1:0] e_PC,
+  input  alucon_t      e_ALUCon,
   output logic [N-1:0] e_ALU_Result
 );
-  
-logic signed [N-1:0] signed_A, signed_B;
 
-assign signed_A = A;
-assign signed_B = B;
+  logic signed [N-1:0] signed_A, signed_B;
 
-always @(*) begin
-  case(e_ALUCon)
-    5'b00000: e_ALU_Result = signed_A + signed_B; // ADD
-    5'b00001: e_ALU_Result = signed_A - signed_B; // SUB
-    5'b00010: e_ALU_Result = A & B; // AND
-    5'b00011: e_ALU_Result = A | B; // OR
-    5'b00100: e_ALU_Result = A ^ B; // XOR
-    5'b00101: e_ALU_Result = (signed_A < signed_B) ? 32'h1 : 32'h0; // SLT
-    5'b00110: e_ALU_Result = B; // LUI (Pass B)
-    5'b00111: e_ALU_Result = A << B[4:0]; // SLL
-    5'b01000: e_ALU_Result = A >> B[4:0]; // SRL
-    5'b01001: e_ALU_Result = signed_A >>> B[4:0]; // SRA
-    5'b01010: e_ALU_Result = (A < B) ? 32'h1 : 32'h0; // SLTU
-    5'b01011: e_ALU_Result = e_PC + B; // AUIPC
-    default:  e_ALU_Result = 32'h0;
-  endcase
-end
+  assign signed_A = A;
+  assign signed_B = B;
+
+  always_comb begin
+    case (e_ALUCon)
+      ALU_ADD:   e_ALU_Result = signed_A + signed_B;
+      ALU_SUB:   e_ALU_Result = signed_A - signed_B;
+      ALU_AND:   e_ALU_Result = A & B;
+      ALU_OR:    e_ALU_Result = A | B;
+      ALU_XOR:   e_ALU_Result = A ^ B;
+      ALU_SLT:   e_ALU_Result = (signed_A < signed_B) ? 32'h1 : 32'h0;
+      ALU_LUI:   e_ALU_Result = B;              // pass the upper immediate straight through
+      ALU_SLL:   e_ALU_Result = A << B[4:0];
+      ALU_SRL:   e_ALU_Result = A >> B[4:0];
+      ALU_SRA:   e_ALU_Result = signed_A >>> B[4:0];
+      ALU_SLTU:  e_ALU_Result = (A < B) ? 32'h1 : 32'h0;
+      ALU_AUIPC: e_ALU_Result = e_PC + B;
+      default:   e_ALU_Result = 32'h0;
+    endcase
+  end
 endmodule
